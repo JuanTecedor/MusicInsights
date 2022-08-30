@@ -8,13 +8,17 @@ from library.library import Library
 from library.song import Song
 
 
+class SpotifyClientWrongResponseStatusCode(Exception):
+    pass
+
+
 class SpotifyClient:
     url = "https://api.spotify.com/v1/me/tracks"
 
     def __init__(self, token: str):
         self.token = token
 
-    def download_library(self):
+    def download_library(self) -> Library:
         library = Library()
         headers = {
             "Authorization": f"Bearer {self.token}",
@@ -25,9 +29,9 @@ class SpotifyClient:
         json_data = response.json()
 
         if response.status_code != 200:
-            pass  # TODO
+            raise SpotifyClientWrongResponseStatusCode("The response status code was not 200")
 
-        self._add_items(json_data["items"])
+        self._add_items(library, json_data["items"])
         while json_data["next"]:
             response = requests.get(url=json_data["next"], headers=headers)
             json_data = response.json()
@@ -35,7 +39,7 @@ class SpotifyClient:
         return library
 
     @staticmethod
-    def _add_items(library: Library, items: List[Dict[str, Dict[str, Any]]]):
+    def _add_items(library: Library, items: List[Dict[str, Any]]):
         for item in items:
             track_data = item["track"]
             song_id = track_data["id"]
