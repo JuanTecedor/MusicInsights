@@ -34,7 +34,8 @@ class SpotifyClient:
             self._add_items(library, json_data["items"])
         return library
 
-    def _add_items(self, library: Library, items: List[Dict[str, Dict[str, Any]]]):
+    @staticmethod
+    def _add_items(library: Library, items: List[Dict[str, Dict[str, Any]]]):
         for item in items:
             track_data = item["track"]
             song_id = track_data["id"]

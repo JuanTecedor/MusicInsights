@@ -35,6 +35,7 @@ class Library:
         with open(self.songs_path, "r") as file:
             songs_dict = json.load(file)
             for song_id, song_data in songs_dict.items():
+                song_data["added_at"] = datetime.fromisoformat(song_data["added_at"])
                 self.songs[song_id] = Song(**song_data)
 
         with open(self.albums_path, "r") as file:

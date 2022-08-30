@@ -33,8 +33,10 @@ if __name__ == "__main__":
             artist_songs_count[artist_name] = 1
         else:
             artist_songs_count[artist_name] += 1
-    artist_songs_count = {k: v for k, v in sorted(artist_songs_count.items(), key=lambda item: item[1], reverse=True)}
+    artist_songs_count = {k: v for k, v in sorted(artist_songs_count.items(),
+                                                  key=lambda item: item[1], reverse=True)}
 
-    albums_ordered_by_year = {k: v for k, v in sorted(library.albums.items(), key=lambda item: item[1].release_date, reverse=True)}
+    albums_ordered_by_year = {k: v for k, v in sorted(library.albums.items(),
+                                                      key=lambda item: item[1].release_date, reverse=True)}
 
     print("Done. Do not forget to deauthorize the app in https://www.spotify.com/account/apps/")
