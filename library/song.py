@@ -1,4 +1,3 @@
-import json
 from datetime import datetime
 from typing import List
 
@@ -23,6 +22,3 @@ class Song:
         self.album_id = album_id
         self.disc_number = disc_number
         self.song_type = song_type
-
-    def to_json(self, indent=4):
-        return json.dumps(self.__dict__, indent=indent)
