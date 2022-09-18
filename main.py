@@ -35,9 +35,9 @@ if __name__ == "__main__":
     library = Library()
     library.load_from_files()
 
-    library_view = LibraryView(library)
-    print(f"{library_view.explicit_percentage()=}")
-    print(f"{library_view.top_n_artists_by_liked_songs(reverse=True)=}")  # TODO fix representation
-    print(f"{library_view.albums_ordered_by_year(reverse=False)=}")  # TODO fix representation
+    library_view = LibraryView()
+    print(f"{library_view.explicit_percentage(library)=}")
+    print(f"{library_view.top_n_artists_by_liked_songs(library, reverse=True)=}")  # TODO fix representation
+    print(f"{library_view.albums_ordered_by_year(library, reverse=False)=}")  # TODO fix representation
 
     print("Done. Do not forget to deauthorize the app in https://www.spotify.com/account/apps/")
