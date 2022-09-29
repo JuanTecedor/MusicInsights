@@ -1,6 +1,8 @@
 import argparse
 
+from library.database.libraryDB import LibraryDB
 from library.library import Library
+from library.libraryReport import LibraryReport
 from library.libraryView import LibraryView
 from spotifyAuthenticator import SpotifyAuthenticator, AccessTokenNotFoundException
 from spotifyClient import SpotifyClient, SpotifyClientWrongResponseStatusCode
@@ -35,9 +37,13 @@ if __name__ == "__main__":
     library = Library()
     library.load_from_files()
 
-    library_view = LibraryView()
-    print(f"{library_view.explicit_percentage(library)=}")
-    print(f"{library_view.top_n_artists_by_liked_songs(library, reverse=True)=}")  # TODO fix representation
-    print(f"{library_view.albums_ordered_by_year(library, reverse=False)=}")  # TODO fix representation
+    libraryReport = LibraryReport()
+    libraryReport.create_report(library)
+
+    libraryDB = LibraryDB()
+    libraryDB.add_artists(library)
+    libraryDB.add_albums(library)
+    libraryDB.add_songs(library)
+    libraryDB.output_to_file()
 
     print("Done. Do not forget to deauthorize the app in https://www.spotify.com/account/apps/")

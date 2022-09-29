@@ -11,9 +11,9 @@ class UnknownDatePrecisionError(Exception):
 
 
 class Library:
-    songs_path = "songs.json"
-    albums_path = "albums.json"
-    artists_path = "artists.json"
+    songs_path = "out/songs.json"
+    albums_path = "out/albums.json"
+    artists_path = "out/artists.json"
 
     def __init__(self):
         self.artists = {}
@@ -35,7 +35,7 @@ class Library:
         with open(self.songs_path, "r") as file:
             songs_dict = json.load(file)
             for song_id, song_data in songs_dict.items():
-                song_data["added_at"] = datetime.fromisoformat(song_data["added_at"])
+                song_data["added_at"] = datetime.fromisoformat(song_data["added_at"][:-1])
                 self.songs[song_id] = Song(**song_data)
 
         with open(self.albums_path, "r") as file:

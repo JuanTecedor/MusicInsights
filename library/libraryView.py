@@ -7,12 +7,12 @@ class LibraryView:
         return {k: dictionary[k] for k in list(dictionary)[:n]}
 
     @staticmethod
-    def explicit_percentage(library: Library):
+    def explicit_proportion(library: Library) -> float:
         explicit_count = 0
         for song_data in library.songs.values():
             if song_data.explicit:
                 explicit_count += 1
-        return explicit_count / len(library.songs) * 100
+        return explicit_count / len(library.songs)
 
     @staticmethod
     def top_n_artists_by_liked_songs(library: Library, n=10, reverse=False):
@@ -30,8 +30,7 @@ class LibraryView:
         return LibraryView._take_n_first_from_dict(artist_songs_count, n)
 
     @staticmethod
-    def albums_ordered_by_year(library: Library, n=10, reverse=False):
-        albums_ordered_by_year = {v.name: str(v.release_date) for k, v in sorted(
+    def albums_ordered_by_year(library: Library, reverse=False):
+        return {v.name: v.release_date for k, v in sorted(
             library.albums.items(), key=lambda item: item[1].release_date, reverse=reverse
         )}
-        return LibraryView._take_n_first_from_dict(albums_ordered_by_year, n)
