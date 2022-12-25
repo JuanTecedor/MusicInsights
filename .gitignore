@@ -2,7 +2,5 @@
 credentials.py
 *.json
 __pycache__/
-TODO
 out/report.txt
 out/index.html
-

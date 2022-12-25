@@ -29,7 +29,9 @@ class SpotifyClient:
         json_data = response.json()
 
         if response.status_code != 200:
-            raise SpotifyClientWrongResponseStatusCode("The response status code was not 200")
+            raise SpotifyClientWrongResponseStatusCode(
+                "The response status code was not 200"
+            )
 
         self._add_items(library, json_data["items"])
         while json_data["next"]:
@@ -43,7 +45,8 @@ class SpotifyClient:
         for item in items:
             track_data = item["track"]
             song_id = track_data["id"]
-            artists = [artist_data["id"] for artist_data in track_data["artists"]]
+            artists = \
+                [artist_data["id"] for artist_data in track_data["artists"]]
             album_id = track_data["album"]["id"]
 
             if song_id not in library.songs:
@@ -71,7 +74,9 @@ class SpotifyClient:
                     album_id=album_id,
                     name=album_data["name"],
                     release_date=album_data["release_date"],
-                    release_date_precision=album_data["release_date_precision"],
+                    release_date_precision=album_data[
+                        "release_date_precision"
+                    ],
                     songs=[song_id],
                     total_tracks=album_data["total_tracks"]
                 )

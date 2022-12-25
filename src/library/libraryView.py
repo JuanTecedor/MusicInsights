@@ -1,4 +1,4 @@
-from library.library import Library
+from src.library.library import Library
 
 
 class LibraryView:
@@ -25,12 +25,16 @@ class LibraryView:
                 else:
                     artist_songs_count[artist_name] += 1
         artist_songs_count = {k: v for k, v in sorted(
-            artist_songs_count.items(), key=lambda item: item[1], reverse=reverse
+            artist_songs_count.items(),
+            key=lambda item: item[1],
+            reverse=reverse
         )}
         return LibraryView._take_n_first_from_dict(artist_songs_count, n)
 
     @staticmethod
     def albums_ordered_by_year(library: Library, reverse=False):
         return {v.name: v.release_date for k, v in sorted(
-            library.albums.items(), key=lambda item: item[1].release_date, reverse=reverse
+            library.albums.items(),
+            key=lambda item: item[1].release_date,
+            reverse=reverse
         )}

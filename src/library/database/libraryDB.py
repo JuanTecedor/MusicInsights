@@ -1,6 +1,8 @@
+import os
+
 import pandas as pd
 
-from library.library import Library
+from src.library.library import Library
 
 
 class LibraryDB:
@@ -20,19 +22,22 @@ class LibraryDB:
         data = []
         for album in library.albums.values():
             row = [album.album_id, album.album_type, album.artists,
-                   album.name, album.release_date, album.release_date_precision,
+                   album.name, album.release_date,
+                   album.release_date_precision,
                    album.songs, album.total_tracks]
             data.append(row)
         self.albums = pd.DataFrame(data, columns=["id", "type", "artists",
-                                                  "name", "release_date", "release_date_precission",
+                                                  "name", "release_date",
+                                                  "release_date_precision",
                                                   "songs", "total_tracks"])
 
     def add_songs(self, library: Library):
         data = []
         for song in library.songs.values():
-            row = [song.song_id, song.added_at, song.artists, song.duration_ms,
-                   song.explicit, song.name, song.popularity, song.track_number,
-                   song.is_local, song.album_id, song.disc_number, song.song_type]
+            row = [song.song_id, song.added_at, song.artists,
+                   song.duration_ms, song.explicit, song.name,
+                   song.popularity, song.track_number, song.is_local,
+                   song.album_id, song.disc_number, song.song_type]
             data.append(row)
         self.songs = pd.DataFrame(data, columns=[
             "id", "added_at", "artists", "duration_ms",
@@ -53,5 +58,5 @@ class LibraryDB:
         """
         tables = self.songs.sort_values("popularity").to_html(index=False)
         html_str = html_str.format(tables)
-        with open("out/index.html", "w") as file:
+        with open(os.path.join("out", "index.html"), "w") as file:
             file.write(html_str)
