@@ -2,23 +2,21 @@ import os
 
 import pandas as pd
 
-from src.library.library import Library
+from library.library import Library
 
 
 class LibraryDB:
-    def __init__(self):
-        self.artists = pd.DataFrame()
-        self.albums = pd.DataFrame()
-        self.songs = pd.DataFrame()
 
-    def add_artists(self, library: Library):
+    @staticmethod
+    def _add_artists(library: Library) -> pd.DataFrame:
         data = []
         for artist in library.artists.values():
             row = [artist.artist_id, artist.name, artist.artist_type]
             data.append(row)
-        self.artists = pd.DataFrame(data, columns=["id", "name", "type"])
+        return pd.DataFrame(data, columns=["id", "name", "type"])
 
-    def add_albums(self, library: Library):
+    @staticmethod
+    def _add_albums(library: Library) -> pd.DataFrame:
         data = []
         for album in library.albums.values():
             row = [album.album_id, album.album_type, album.artists,
@@ -26,12 +24,13 @@ class LibraryDB:
                    album.release_date_precision,
                    album.songs, album.total_tracks]
             data.append(row)
-        self.albums = pd.DataFrame(data, columns=["id", "type", "artists",
-                                                  "name", "release_date",
-                                                  "release_date_precision",
-                                                  "songs", "total_tracks"])
+        return pd.DataFrame(data, columns=["id", "type", "artists", "name",
+                                           "release_date",
+                                           "release_date_precision", "songs",
+                                           "total_tracks"])
 
-    def add_songs(self, library: Library):
+    @staticmethod
+    def _add_songs(library: Library) -> pd.DataFrame:
         data = []
         for song in library.songs.values():
             row = [song.song_id, song.added_at, song.artists,
@@ -39,24 +38,39 @@ class LibraryDB:
                    song.popularity, song.track_number, song.is_local,
                    song.album_id, song.disc_number, song.song_type]
             data.append(row)
-        self.songs = pd.DataFrame(data, columns=[
+        return pd.DataFrame(data, columns=[
             "id", "added_at", "artists", "duration_ms",
             "explicit", "name", "popularity", "track_number",
             "is_local", "album_id", "disc_number", "song_type"
         ])
 
-    def output_to_file(self):
-        html_str = """
+    @staticmethod
+    def output_to_file(library: Library) -> None:
+        html_str = f"""
         <!DOCTYPE html>
         <html>
         <head>
         </head>
         <body>
-            {}
+            <p>Number of songs: {len(library.songs)}</p>
+            <p>Number of albums: {len(library.albums)}</p>
+            <p>Number of artists: {len(library.artists)}</p>
+            <p>Songs table:</p>
+            {{}}
+            <p>Albums table:</p>
+            {{}}
+            <p>Artists table:</p>
+            {{}}
         </body>
         </html>
         """
-        tables = self.songs.sort_values("popularity").to_html(index=False)
-        html_str = html_str.format(tables)
+        songs_table_html = LibraryDB._add_songs(library)\
+            .sort_values("popularity").to_html(index=False)
+        albums_table_html = LibraryDB._add_albums(library).to_html(index=False)
+        artists_table_html = LibraryDB._add_artists(library)\
+            .to_html(index=False)
+        html_str = html_str.format(
+            songs_table_html, albums_table_html, artists_table_html
+        )
         with open(os.path.join("out", "index.html"), "w") as file:
             file.write(html_str)

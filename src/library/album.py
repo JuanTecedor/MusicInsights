@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import List
 
-from src.library.artist import Artist
-from src.library.song import Song
+from library.artist import Artist
+from library.song import Song
 
 
 class Album:

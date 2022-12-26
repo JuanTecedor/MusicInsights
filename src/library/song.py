@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List
 
-from src.library.artist import Artist
+from library.artist import Artist
 
 
 class Song:

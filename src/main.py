@@ -28,11 +28,7 @@ if __name__ == "__main__":
     library = Library()
     library.load_from_files()
 
-    libraryDB = LibraryDB()
-    libraryDB.add_artists(library)
-    libraryDB.add_albums(library)
-    libraryDB.add_songs(library)
-    libraryDB.output_to_file()
+    LibraryDB.output_to_file(library)
 
     print("Done. Do not forget to deauthorize the app in "
           "https://www.spotify.com/account/apps/")

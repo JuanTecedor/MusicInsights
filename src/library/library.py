@@ -2,9 +2,9 @@ import json
 import os
 from datetime import datetime
 
-from src.library.album import Album
-from src.library.artist import Artist
-from src.library.song import Song
+from library.album import Album
+from library.artist import Artist
+from library.song import Song
 
 
 class UnknownDatePrecisionError(Exception):
@@ -23,7 +23,7 @@ class Library:
         self.albums = {}
 
     @staticmethod
-    def _date_precision_to_date_format(precision):
+    def _date_precision_to_date_format(precision: str) -> str:
         if precision == "year":
             return "%Y"
         elif precision == "month":
@@ -35,7 +35,7 @@ class Library:
                 f"The precision of the date is unknown {precision}."
             )
 
-    def load_from_files(self):
+    def load_from_files(self) -> None:
         with open(self._SONGS_PATH, "r") as file:
             songs_dict = json.load(file)
             for song_id, song_data in songs_dict.items():
