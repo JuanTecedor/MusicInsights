@@ -28,21 +28,24 @@ class UnableToAddSongsToPlaylistException(Exception):
 class SpotifyClient:
     BASE_URL = "https://api.spotify.com/v1"
     SAVED_TRACKS_URL = BASE_URL + "/me/tracks"
-    
 
     def __init__(self, token: str) -> None:
         self.token = token
         self.user_id = self._get_user_id()
-        self.CREATE_PLAYLIST_URL = self.BASE_URL + f"/users/{self.user_id}/playlists"
-    
+        self.CREATE_PLAYLIST_URL = self.BASE_URL \
+            + f"/users/{self.user_id}/playlists"
+
     def _get_user_id(self) -> None:
-        response = requests.get("https://api.spotify.com/v1/me", headers=self._get_common_headers())
+        response = requests.get(
+            "https://api.spotify.com/v1/me",
+            headers=self._get_common_headers()
+        )
         if response.status_code != 200:
             raise UnableToGetUserIDException(
                 f"The response status code was not 200\n{response.text}"
             )
         return response.json()["id"]
-    
+
     def _get_common_headers(self) -> Dict[str, str]:
         return {
             "Authorization": f"Bearer {self.token}",
@@ -122,12 +125,14 @@ class SpotifyClient:
                     )
                     library.artists[artist_id] = artist
 
-    def create_playlist(self, playlist_name: str, song_list: List[Song.SongId]) -> None:
+    def create_playlist(
+        self, playlist_name: str, song_list: List[Song.SongId]
+            ) -> None:
         data = {
             "name": playlist_name,
             "public": False,
             "collaborative": False,
-            "description" : ""
+            "description": ""
         }
 
         response = requests.post(
@@ -139,11 +144,13 @@ class SpotifyClient:
             raise UnableToCreatePlaylistException(
                 f"The response status code was not 200\n{response.text}"
             )
-        
+
         playlist_id = response.json()["id"]
         self._add_songs_to_playlist(playlist_id, song_list)
 
-    def _add_songs_to_playlist(self, playlist_id: str, song_list: List[Song.SongId]) -> None:
+    def _add_songs_to_playlist(
+        self, playlist_id: str, song_list: List[Song.SongId]
+    ) -> None:
         max_size = 100
         splitted_song_list = split_list_in_chunks(song_list, max_size)
         for splitted in splitted_song_list:

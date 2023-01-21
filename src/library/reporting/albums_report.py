@@ -1,11 +1,12 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
+
 class AlbumsReport:
     def __init__(self, data: pd.DataFrame) -> None:
         self.data = data
         self.decade_hist = self._calculate_decade_hist()
-    
+
     def _calculate_decade_hist(self):
         decade_data = self.data["release_date"] \
             .apply(lambda x: x.year - (x.year % 10)) \
@@ -22,7 +23,10 @@ class AlbumsReport:
         plt.xticks(decade_data["decade"])
         plt.xlabel("Decade")
         plt.ylabel("Count")
-        plt.xlim(left=min(decade_data["decade"]) - 10, right=max(decade_data["decade"]) + 10)
+        plt.xlim(
+            left=min(decade_data["decade"]) - 10,
+            right=max(decade_data["decade"]) + 10
+        )
         plt.title("Album Decade Histogram")
         plt.show()
-        pass
+        pass  # TODO

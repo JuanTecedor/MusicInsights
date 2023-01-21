@@ -39,12 +39,11 @@ if __name__ == "__main__":
     arguments = parse_arguments()
     if arguments.download_and_save_library:
         download_and_save_library()
-    
+
     if arguments.process_data:
         json_library = JSONLibrary()
         json_library.load_from_files()
         df_library = DataFrameLibrary(json_library)
         albums_report = AlbumsReport(df_library.albums)
-
-    if arguments.process_data and arguments.create_playlists:
-        create_playlists(df_library)
+        if arguments.create_playlists:
+            create_playlists(df_library)
