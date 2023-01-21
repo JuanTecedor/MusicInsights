@@ -19,7 +19,7 @@ class Song:
                  is_local: bool,
                  album_id: str,
                  disc_number: int,
-                 song_type: str):
+                 song_type: str) -> None:
         self.added_at = added_at
         self.artists = artists
         self.duration_ms = duration_ms

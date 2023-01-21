@@ -4,33 +4,61 @@ import requests
 
 from library.album import Album
 from library.artist import Artist
-from library.library import Library
+from library.json_library import JSONLibrary
 from library.song import Song
+from utils import split_list_in_chunks
 
 
-class SpotifyClientWrongResponseStatusCode(Exception):
+class UnableToGetUserIDException(Exception):
+    pass
+
+
+class UnableToGetTracksException(Exception):
+    pass
+
+
+class UnableToCreatePlaylistException(Exception):
+    pass
+
+
+class UnableToAddSongsToPlaylistException(Exception):
     pass
 
 
 class SpotifyClient:
-    url = "https://api.spotify.com/v1/me/tracks"
+    BASE_URL = "https://api.spotify.com/v1"
+    SAVED_TRACKS_URL = BASE_URL + "/me/tracks"
+    
 
-    def __init__(self, token: str):
+    def __init__(self, token: str) -> None:
         self.token = token
-
-    def download_library(self) -> Library:
-        library = Library()
-        headers = {
+        self.user_id = self._get_user_id()
+        self.CREATE_PLAYLIST_URL = self.BASE_URL + f"/users/{self.user_id}/playlists"
+    
+    def _get_user_id(self) -> None:
+        response = requests.get("https://api.spotify.com/v1/me", headers=self._get_common_headers())
+        if response.status_code != 200:
+            raise UnableToGetUserIDException(
+                f"The response status code was not 200\n{response.text}"
+            )
+        return response.json()["id"]
+    
+    def _get_common_headers(self) -> Dict[str, str]:
+        return {
             "Authorization": f"Bearer {self.token}",
             "Content-Type": "application/json",
-            "limit": "1"
         }
-        response = requests.get(url=self.url, headers=headers)
+
+    def download_library(self) -> JSONLibrary:
+        library = JSONLibrary()
+        headers = self._get_common_headers()
+        headers["limit"] = "50"
+        response = requests.get(url=self.SAVED_TRACKS_URL, headers=headers)
         json_data = response.json()
 
         if response.status_code != 200:
-            raise SpotifyClientWrongResponseStatusCode(
-                "The response status code was not 200"
+            raise UnableToGetTracksException(
+                f"The response status code was not 200\n{response.text}"
             )
 
         self._add_items(library, json_data["items"])
@@ -41,7 +69,7 @@ class SpotifyClient:
         return library
 
     @staticmethod
-    def _add_items(library: Library, items: List[Dict[str, Any]]) -> None:
+    def _add_items(library: JSONLibrary, items: List[Dict[str, Any]]) -> None:
         for item in items:
             track_data = item["track"]
             song_id = track_data["id"]
@@ -93,3 +121,41 @@ class SpotifyClient:
                         artist_type=artist_data["type"]
                     )
                     library.artists[artist_id] = artist
+
+    def create_playlist(self, playlist_name: str, song_list: List[Song.SongId]) -> None:
+        data = {
+            "name": playlist_name,
+            "public": False,
+            "collaborative": False,
+            "description" : ""
+        }
+
+        response = requests.post(
+            self.CREATE_PLAYLIST_URL,
+            headers=self._get_common_headers(),
+            json=data
+        )
+        if response.status_code != 201:
+            raise UnableToCreatePlaylistException(
+                f"The response status code was not 200\n{response.text}"
+            )
+        
+        playlist_id = response.json()["id"]
+        self._add_songs_to_playlist(playlist_id, song_list)
+
+    def _add_songs_to_playlist(self, playlist_id: str, song_list: List[Song.SongId]) -> None:
+        max_size = 100
+        splitted_song_list = split_list_in_chunks(song_list, max_size)
+        for splitted in splitted_song_list:
+            data = {
+                "uris": [f"spotify:track:{x}" for x in splitted]
+            }
+            response = requests.post(
+                self.BASE_URL + f"/playlists/{playlist_id}/tracks",
+                headers=self._get_common_headers(),
+                json=data)
+
+            if response.status_code != 201:
+                raise UnableToAddSongsToPlaylistException(
+                    f"The response status code was not 200\n{response.text}"
+                )

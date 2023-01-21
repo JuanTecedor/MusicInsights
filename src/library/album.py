@@ -16,7 +16,7 @@ class Album:
                  release_date: datetime,
                  release_date_precision: str,
                  songs: List[Song.SongId],
-                 total_tracks: int):
+                 total_tracks: int) -> None:
         self.album_type = album_type
         self.artists = artists
         self.album_id = album_id

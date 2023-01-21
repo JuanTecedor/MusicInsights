@@ -2,13 +2,13 @@ import os
 
 import pandas as pd
 
-from library.library import Library
+from library.json_library import JSONLibrary
 
 
 class LibraryDB:
 
     @staticmethod
-    def _add_artists(library: Library) -> pd.DataFrame:
+    def _add_artists(library: JSONLibrary) -> pd.DataFrame:
         data = []
         for artist in library.artists.values():
             row = [artist.artist_id, artist.name, artist.artist_type]
@@ -16,7 +16,7 @@ class LibraryDB:
         return pd.DataFrame(data, columns=["id", "name", "type"])
 
     @staticmethod
-    def _add_albums(library: Library) -> pd.DataFrame:
+    def _add_albums(library: JSONLibrary) -> pd.DataFrame:
         data = []
         for album in library.albums.values():
             row = [album.album_id, album.album_type, album.artists,
@@ -30,7 +30,7 @@ class LibraryDB:
                                            "total_tracks"])
 
     @staticmethod
-    def _add_songs(library: Library) -> pd.DataFrame:
+    def _add_songs(library: JSONLibrary) -> pd.DataFrame:
         data = []
         for song in library.songs.values():
             row = [song.song_id, song.added_at, song.artists,
@@ -45,7 +45,7 @@ class LibraryDB:
         ])
 
     @staticmethod
-    def output_to_file(library: Library) -> None:
+    def output_to_file(library: JSONLibrary) -> None:
         html_str = f"""
         <!DOCTYPE html>
         <html>

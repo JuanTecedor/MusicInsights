@@ -49,3 +49,8 @@ or with:
 ```
 python3 src/main.py --download_and_save_library
 ```
+
+NEW:
+python3.11 -m venv ./.venv
+source .venv/bin/activate
+pip install -r requirements.txt

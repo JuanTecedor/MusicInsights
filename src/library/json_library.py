@@ -11,13 +11,13 @@ class UnknownDatePrecisionError(Exception):
     pass
 
 
-class Library:
-    _BASE_PATH = "out"
+class JSONLibrary:
+    _BASE_PATH = os.path.join("out")
     _SONGS_PATH = os.path.join(_BASE_PATH, "songs.json")
     _ALBUMS_PATH = os.path.join(_BASE_PATH, "albums.json")
     _ARTISTS_PATH = os.path.join(_BASE_PATH, "artists.json")
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.artists = {}
         self.songs = {}
         self.albums = {}
