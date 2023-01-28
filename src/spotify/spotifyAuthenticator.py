@@ -6,6 +6,10 @@ from credentials import client_id
 from utils import extract_token_from_response
 
 
+class BadStatusCodeException(Exception):
+    pass
+
+
 class SpotifyAuthenticator:
     class AvailableScopes(Enum):
         USER_LIBRARY_READ = "user-library-read"
@@ -27,8 +31,9 @@ class SpotifyAuthenticator:
         }
         response = requests.get(url=url, params=payload)
         if response.status_code != 200:
-            breakpoint()
-            pass  # TODO
+            raise BadStatusCodeException(
+                f"The status code was {response.status_code}"
+            )
         print(response.url)
         url_string_response = input("Please enter the full URL:")
         return extract_token_from_response(url_string_response)

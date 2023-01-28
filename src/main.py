@@ -1,5 +1,3 @@
-import argparse
-
 from library.dataframe_library import DataFrameLibrary
 from library.json_library import JSONLibrary
 from spotify.spotifyAuthenticator import SpotifyAuthenticator
@@ -7,14 +5,11 @@ from spotify.spotifyClient import SpotifyClient
 from library.reporting.albums_report import AlbumsReport
 from library.reporting.library_report import LibraryReport
 from library.reporting.html_report import HTMLReport
+from argument_parser import get_parser
 
 
-def parse_arguments() -> argparse.Namespace:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--download_and_save_library", action="store_true")
-    parser.add_argument("--create_playlists_by_decades", action="store_true")
-    parser.add_argument("--create_report", action="store_true")
-    return parser.parse_args()
+class FileNotFoundException(Exception):
+    pass
 
 
 def download_and_save_library() -> None:
@@ -45,14 +40,20 @@ def create_report(library: DataFrameLibrary) -> None:
 
 
 if __name__ == "__main__":
-    arguments = parse_arguments()
+    arguments = get_parser()
 
     if arguments.download_and_save_library:
         download_and_save_library()
 
     if arguments.create_playlists_by_decades or arguments.create_report:
         json_library = JSONLibrary()
-        json_library.load_from_files()
+        try:
+            json_library.load_from_files()
+        except FileNotFoundError as file:
+            raise FileNotFoundException(
+                f"File {file} not found. First download the files."
+            )
+
         df_library = DataFrameLibrary(json_library)
 
         if arguments.create_playlists_by_decades:

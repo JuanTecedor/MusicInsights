@@ -74,7 +74,6 @@ class JSONLibrary:
         return albums
 
     def load_from_files(self) -> None:
-        # TODO ERROR CHECKING
         self.songs = self._load_songs_from_file()
         self.artists = self._load_artists_from_file()
         self.albums = self._load_albums_from_file()
