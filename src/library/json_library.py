@@ -1,13 +1,14 @@
 import json
 import os
 from datetime import datetime
+from typing import Any, Dict, LiteralString
 
 from library.album import Album
 from library.artist import Artist
 from library.song import Song
 
 
-class UnknownDatePrecisionError(Exception):
+class UnknownDatePrecisionException(Exception):
     pass
 
 
@@ -31,33 +32,52 @@ class JSONLibrary:
         elif precision == "day":
             return "%Y-%m-%d"
         else:
-            raise UnknownDatePrecisionError(
+            raise UnknownDatePrecisionException(
                 f"The precision of the date is unknown {precision}."
             )
 
+    @staticmethod
+    def _load_from_file(path: LiteralString) -> Dict[Any, Any]:
+        with open(path, "r") as file:
+            return json.load(file)
+
+    @staticmethod
+    def _load_songs_from_file():
+        songs = {}
+        for song_id, song_data in \
+                JSONLibrary._load_from_file(JSONLibrary._SONGS_PATH).items():
+            song_data["added_at"] \
+                = datetime.fromisoformat(song_data["added_at"][:-1])
+            songs[song_id] = Song(**song_data)
+        return songs
+
+    @staticmethod
+    def _load_artists_from_file():
+        artists = {}
+        for artist_id, artist_data in \
+                JSONLibrary._load_from_file(JSONLibrary._ARTISTS_PATH).items():
+            artists[artist_id] = Artist(**artist_data)
+        return artists
+
+    @staticmethod
+    def _load_albums_from_file():
+        albums = {}
+        for album_id, album_data in \
+                JSONLibrary._load_from_file(JSONLibrary._ALBUMS_PATH).items():
+            date_format = JSONLibrary._date_precision_to_date_format(
+                album_data["release_date_precision"]
+            )
+            album_data["release_date"] = datetime.strptime(
+                album_data["release_date"], date_format
+            )
+            albums[album_id] = Album(**album_data)
+        return albums
+
     def load_from_files(self) -> None:
-        with open(self._SONGS_PATH, "r") as file:
-            songs_dict = json.load(file)
-            for song_id, song_data in songs_dict.items():
-                song_data["added_at"]\
-                    = datetime.fromisoformat(song_data["added_at"][:-1])
-                self.songs[song_id] = Song(**song_data)
-
-        with open(self._ALBUMS_PATH, "r") as file:
-            albums_dict = json.load(file)
-            for album_id, album_data in albums_dict.items():
-                date_format = self._date_precision_to_date_format(
-                    album_data["release_date_precision"]
-                )
-                album_data["release_date"] = datetime.strptime(
-                    album_data["release_date"], date_format
-                )
-                self.albums[album_id] = Album(**album_data)
-
-        with open(self._ARTISTS_PATH, "r") as file:
-            artists_dict = json.load(file)
-            for artist_id, artist_data in artists_dict.items():
-                self.artists[artist_id] = Artist(**artist_data)
+        # TODO ERROR CHECKING
+        self.songs = self._load_songs_from_file()
+        self.artists = self._load_artists_from_file()
+        self.albums = self._load_albums_from_file()
 
     def save_to_file(self) -> None:
         with open(self._SONGS_PATH, "w") as file:

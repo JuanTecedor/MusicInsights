@@ -52,7 +52,7 @@ class SpotifyClient:
             "Content-Type": "application/json",
         }
 
-    def download_library(self) -> JSONLibrary:
+    def download_library_as_json(self) -> JSONLibrary:
         library = JSONLibrary()
         headers = self._get_common_headers()
         headers["limit"] = "50"
@@ -126,7 +126,7 @@ class SpotifyClient:
                     library.artists[artist_id] = artist
 
     def create_playlist(
-        self, playlist_name: str, song_list: List[Song.SongId]
+        self, playlist_name: str, song_list: List[Song.SongId_Type]
             ) -> None:
         data = {
             "name": playlist_name,
@@ -149,7 +149,7 @@ class SpotifyClient:
         self._add_songs_to_playlist(playlist_id, song_list)
 
     def _add_songs_to_playlist(
-        self, playlist_id: str, song_list: List[Song.SongId]
+        self, playlist_id: str, song_list: List[Song.SongId_Type]
     ) -> None:
         max_size = 100
         splitted_song_list = split_list_in_chunks(song_list, max_size)

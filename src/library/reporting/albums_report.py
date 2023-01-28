@@ -1,14 +1,18 @@
-import pandas as pd
+import os
 import matplotlib.pyplot as plt
+
+from library.dataframe_library import DataFrameLibrary
+from library.reporting.html_report import HTMLReport
 
 
 class AlbumsReport:
-    def __init__(self, data: pd.DataFrame) -> None:
-        self.data = data
-        self.decade_hist = self._calculate_decade_hist()
+    def __init__(self, library: DataFrameLibrary, report: HTMLReport) -> None:
+        self._library = library
+        self.report = report
+        self._calculate_decade_hist()
 
-    def _calculate_decade_hist(self):
-        decade_data = self.data["release_date"] \
+    def _calculate_decade_hist(self) -> None:
+        decade_data = self._library.albums["release_date"] \
             .apply(lambda x: x.year - (x.year % 10)) \
             .value_counts() \
             .rename_axis("decade") \
@@ -28,5 +32,6 @@ class AlbumsReport:
             right=max(decade_data["decade"]) + 10
         )
         plt.title("Album Decade Histogram")
-        plt.show()
-        pass  # TODO
+        plt.savefig(os.path.join(".", "out", "decade_count.png"))
+        plt.clf()
+        self.report.add_image("Album Decade Histogram", "decade_count.png")

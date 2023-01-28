@@ -5,15 +5,16 @@ from library.artist import Artist
 
 
 class Song:
-    SongId = str
+    SongId_Type = str
+    SongName_Type = str
 
     def __init__(self,
                  added_at: datetime,
-                 artists: List[Artist.ArtistId],
+                 artists: List[Artist.ArtistId_Type],
                  duration_ms: int,
                  explicit: bool,
-                 song_id: SongId,
-                 name: str,
+                 song_id: SongId_Type,
+                 name: SongName_Type,
                  popularity: int,
                  track_number: int,
                  is_local: bool,

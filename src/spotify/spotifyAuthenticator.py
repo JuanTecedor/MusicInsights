@@ -9,6 +9,7 @@ from utils import extract_token_from_response
 class SpotifyAuthenticator:
     class AvailableScopes(Enum):
         USER_LIBRARY_READ = "user-library-read"
+        USER_TOP_READ = "user-top-read"
         PLAYLIST_READ_PRIVATE = "playlist-read-private"
         PLAYLIST_MODIFY_PRIVATE = "playlist-modify-private"
 

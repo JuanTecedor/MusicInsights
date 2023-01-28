@@ -18,10 +18,11 @@ class DataFrameLibrary:
             [vars(x) for x in json_library.artists.values()]
         )
 
-    def get_album_songs(self, album_id: Album.AlbumId) -> List[Song.SongId]:
+    def get_album_songs(self, album_id: Album.AlbumId_Type) \
+            -> List[Song.SongId_Type]:
         return list(self.songs[self.songs["album_id"] == album_id]["song_id"])
 
-    def songs_by_decades(self) -> Dict[int, List[Song.SongId]]:
+    def songs_by_decades(self) -> Dict[int, List[Song.SongId_Type]]:
         songs_by_decades_dict = {}
         albums = self.albums
         albums["decade"] = \

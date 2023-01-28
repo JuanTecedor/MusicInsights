@@ -166,3 +166,4 @@ credentials.py
 __pycache__/
 out/report.txt
 out/index.html
+out/*.png
