@@ -1,4 +1,5 @@
 import os
+
 import matplotlib.pyplot as plt
 
 from library.dataframe_library import DataFrameLibrary
@@ -31,7 +32,6 @@ class AlbumsReport:
             left=min(decade_data["decade"]) - 10,
             right=max(decade_data["decade"]) + 10
         )
-        plt.title("Album Decade Histogram")
         plt.savefig(os.path.join(".", "out", "decade_count.png"))
         plt.clf()
-        self.report.add_image("Album Decade Histogram", "decade_count.png")
+        self.report.add_image("Albums by Decade", "decade_count.png")

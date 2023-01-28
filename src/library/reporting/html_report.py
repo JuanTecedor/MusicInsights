@@ -1,4 +1,5 @@
 import os
+from typing import Any, List, Tuple
 
 
 class HTMLReport:
@@ -10,11 +11,22 @@ class HTMLReport:
         </head>
 
         <style>
-        body
-        {
-            width:80%;
-            margin-left:auto;
-            margin-right:auto;
+        html {
+            display: flex;
+            justify-content: center;
+            font-family: Arial;
+            margin-left: auto;
+            margin-right: auto;
+            margin: auto;
+            align-items: center;
+        }
+        table, th, td {
+            border: 1px solid;
+        }
+        table {
+            border-collapse: collapse;
+            margin-left: auto;
+            margin-right: auto;
         }
         </style>
 
@@ -26,20 +38,32 @@ class HTMLReport:
         </html>
         """
 
-    def add_image(self, title: str, file_name: str):
+    def add_image(self, image_name: str, file_name: str) -> None:
         self._body_str += f"""
-        <h2>{title}</h2>
-        <img src={file_name} alt={file_name}>
+        <div>
+            <h2>{image_name}</h2>
+            <img src={file_name} alt={file_name}>
+        </div>
         """
 
-    def add_count(self, count_title: str, count: int):
+    def add_table(self, table_title: str, table: List[Tuple[Any, Any]]) \
+            -> None:
         self._body_str += f"""
-        <table>
+        <h2>{table_title}</h2>
+        <div>
+            <table>
+        """
+        for a, b in table:
+            self._body_str += f"""
             <tr>
-                <td>{count_title}</td>
-                <td>{count}</td>
+                <td>{a}</td>
+                <td>{b}</td>
             </tr>
-        </table>
+            """
+        self._body_str += """
+                </tr>
+            </table>
+        </div>
         """
 
     def output_to_file(self) -> None:

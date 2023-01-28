@@ -1,12 +1,17 @@
+import re
 from enum import Enum
 from typing import List
+
 import requests
 
-from credentials import client_id
-from utils import extract_token_from_response
+from spotify.credentials import client_id
 
 
 class BadStatusCodeException(Exception):
+    pass
+
+
+class AccessTokenNotFoundException(Exception):
     pass
 
 
@@ -16,6 +21,16 @@ class SpotifyAuthenticator:
         USER_TOP_READ = "user-top-read"
         PLAYLIST_READ_PRIVATE = "playlist-read-private"
         PLAYLIST_MODIFY_PRIVATE = "playlist-modify-private"
+
+    @staticmethod
+    def _extract_token_from_response(url_string_response: str) -> str:
+        search = re.search("access_token=([^&]+)", url_string_response)
+        if search is None:
+            raise AccessTokenNotFoundException(
+                "Unable to extract token from the URL. "
+                "Did you paste the complete URL?"
+            )
+        return search.group(1)
 
     @staticmethod
     def authenticate(scope: List[AvailableScopes]) -> str:
@@ -35,5 +50,9 @@ class SpotifyAuthenticator:
                 f"The status code was {response.status_code}"
             )
         print(response.url)
-        url_string_response = input("Please enter the full URL:")
-        return extract_token_from_response(url_string_response)
+        url_string_response = input(
+            "Please go to the following URL and paste the complete URL after "
+            "the authorization is done (when redirected to localhost):")
+        return SpotifyAuthenticator._extract_token_from_response(
+            url_string_response
+        )

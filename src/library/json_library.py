@@ -3,6 +3,8 @@ import os
 from datetime import datetime
 from typing import Any, Dict, LiteralString
 
+from attrs import asdict
+
 from library.album import Album
 from library.artist import Artist
 from library.song import Song
@@ -80,10 +82,10 @@ class JSONLibrary:
 
     def save_to_file(self) -> None:
         with open(self._SONGS_PATH, "w") as file:
-            json.dump(self.songs, file, default=vars, indent=4)
+            json.dump(self.songs, file, default=asdict, indent=4)
 
         with open(self._ALBUMS_PATH, "w") as file:
-            json.dump(self.albums, file, default=vars, indent=4)
+            json.dump(self.albums, file, default=asdict, indent=4)
 
         with open(self._ARTISTS_PATH, "w") as file:
-            json.dump(self.artists, file, default=vars, indent=4)
+            json.dump(self.artists, file, default=asdict, indent=4)

@@ -1,22 +1,31 @@
 from typing import Dict, List
-import pandas as pd
 
-from library.json_library import JSONLibrary
+import pandas as pd
+from attrs import asdict
+
 from library.album import Album
+from library.artist import Artist
+from library.json_library import JSONLibrary
 from library.song import Song
 
 
 class DataFrameLibrary:
     def __init__(self, json_library: JSONLibrary) -> None:
         self.songs = pd.DataFrame(
-            [vars(x) for x in json_library.songs.values()]
+            [asdict(x) for x in json_library.songs.values()]
         )
         self.albums = pd.DataFrame(
-            [vars(x) for x in json_library.albums.values()]
+            [asdict(x) for x in json_library.albums.values()]
         )
         self.artists = pd.DataFrame(
-            [vars(x) for x in json_library.artists.values()]
+            [asdict(x) for x in json_library.artists.values()]
         )
+
+    def get_artist_by_id(self, artist_id: Artist.ArtistId_Type) \
+            -> Artist.ArtistName_Type:
+        return self.artists[
+            self.artists["artist_id"] == artist_id
+        ]["name"].iloc[0]
 
     def get_album_songs(self, album_id: Album.AlbumId_Type) \
             -> List[Song.SongId_Type]:
