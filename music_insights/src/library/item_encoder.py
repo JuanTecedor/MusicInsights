@@ -1,11 +1,17 @@
 from datetime import datetime
-from json import JSONEncoder
-from typing import Any
+from typing import Any, Dict, List, Union
+from attr import define
 
 
-class ItemEncoder(JSONEncoder):
-    def default(self, obj: Any) -> str:
-        if isinstance(obj, datetime):
-            return obj.isoformat()
+JSON_Types = Union[str, int, List, Dict, bool, None]
+
+
+class JSONEncoder():
+    @staticmethod
+    def to_json(value: Any) -> JSON_Types:
+        if isinstance(value, JSON_Types):
+            return value
+        elif isinstance(value, datetime):
+            return value.isoformat()
         else:
-            return JSONEncoder.default(self, obj)
+            TypeError()

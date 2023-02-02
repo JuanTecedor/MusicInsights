@@ -1,12 +1,10 @@
-import json
 from datetime import datetime
-from typing import List, Self
+from typing import List
 
 from attrs import define, field, asdict
 
-from src.library.artist import Artist
-from src.library.json_serializable import JSONSerializable
-from src.library.item_encoder import ItemEncoder
+from library.artist import Artist
+from library.json_serializable import JSONSerializable
 
 
 @define
@@ -28,11 +26,3 @@ class Song(JSONSerializable):
     disc_number: int
     is_local: bool
     preview_url: str = ""
-
-    def to_json_str(self) -> str:
-        return json.dumps(asdict(self), cls=ItemEncoder)
-
-    @classmethod
-    def from_json_str(cls, data: str) -> Self:
-        data = json.loads(data)
-        return cls(**data)

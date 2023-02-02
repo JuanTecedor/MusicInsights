@@ -1,3 +1,8 @@
+import json
+import sys
+
+sys.path.append("src")
+
 from pytest import fixture
 
 from src.library.song import Song
@@ -5,7 +10,7 @@ from src.library.song import Song
 @fixture
 def example_song() -> Song:
     return Song(
-        added_at="2023-01-26T23:47:21Z",
+        added_at="2023-01-26T23:47:21Z", # type: ignore
         song_id="song_id",
         album_id="album_id",
         popularity=40,
@@ -17,6 +22,12 @@ def example_song() -> Song:
         disc_number=4,
         artists=["artist_id_1", "artist_id_2"]
     )
+
+
+def test_encode_songs(example_song):
+    songs = [example_song] * 3
+    s = json.dumps(songs, indent=4)
+    pass
 
 
 def test_serialize_song(example_song):

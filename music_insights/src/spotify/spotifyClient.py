@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Optional
 import requests
 
 from library.song import Song
+from library.library import Library
 from utils import split_list_in_chunks
 
 
@@ -90,7 +91,7 @@ class SpotifyClient:
             )
         return response
 
-    def get_liked_songs(self) -> Dict[Song.SongId_Type, Song]:
+    def get_liked_songs(self) -> Library.SongsContainer_Type:
         songs = {}
         next_url = None
         while True:

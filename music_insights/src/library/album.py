@@ -3,9 +3,8 @@ from typing import List
 
 from attrs import define
 
-from src.library.artist import Artist
-from src.library.json_serializable import JSONSerializable
-from src.library.song import Song
+from library.artist import Artist
+from library.song import Song
 
 
 @define
@@ -13,7 +12,6 @@ class Album():
     AlbumId_Type = str
     AlbumName_Type = str
 
-    album_type: str
     artists: List[Artist.ArtistId_Type]
     album_id: AlbumId_Type
     name: AlbumName_Type

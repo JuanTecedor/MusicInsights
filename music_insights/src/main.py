@@ -1,13 +1,7 @@
 from argument_parser import get_parser
-# from library.dataframe_library import DataFrameLibrary
-# from library.json_library import JSONLibrary
-# from library.reporting.albums_report import AlbumsReport
-# from library.reporting.artist_report import ArtistReport
-# from library.reporting.html_report import HTMLReport
-# from library.reporting.library_report import LibraryReport
-# from library.reporting.song_report import SongReport
 from spotify.spotifyAuthenticator import SpotifyAuthenticator
 from spotify.spotifyClient import SpotifyClient
+from library.library import Library
 
 
 class FileNotFoundException(Exception):
@@ -18,8 +12,12 @@ def download_and_save_library() -> None:
     token = SpotifyAuthenticator() \
         .authenticate([SpotifyAuthenticator.AvailableScopes.USER_LIBRARY_READ])
     spotify_client = SpotifyClient(token)
-    library_data = spotify_client.get_liked_songs()
-    pass  # TODO
+    library = Library(
+        songs=spotify_client.get_liked_songs(),
+        albums={},
+        artists={}
+    )  # TODO
+    library.save_to_file()
 
 
 # def get_df_library() -> DataFrameLibrary:
