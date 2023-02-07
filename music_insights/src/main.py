@@ -20,6 +20,12 @@ def download_and_save_library() -> None:
     library.save_to_file()
 
 
+def load_from_file() -> None:
+    library = Library.from_file()
+    pass
+
+
+
 # def get_df_library() -> DataFrameLibrary:
 #     json_library = JSONLibrary()
 #     try:
@@ -57,6 +63,9 @@ if __name__ == "__main__":
 
     if arguments.download_and_save_library:
         download_and_save_library()
+    
+    if arguments.load_from_file:
+        load_from_file()
 
     # if arguments.create_playlists_by_decades or arguments.create_report:
     #     df_library = get_df_library()

@@ -4,11 +4,11 @@ from typing import List
 from attrs import define, field, asdict
 
 from library.artist import Artist
-from library.json_serializable import JSONSerializable
+from library.attr_serialization import AttrSerialization
 
 
 @define
-class Song(JSONSerializable):
+class Song(AttrSerialization):
     SongId_Type = str
     SongName_Type = str
 
