@@ -22,6 +22,10 @@ def download_and_save_library() -> None:
 
 def load_from_file() -> None:
     library = Library.from_file()
+    token = SpotifyAuthenticator() \
+        .authenticate([])
+    spotify_client = SpotifyClient(token)
+    artists = spotify_client.get_artists(list(library.songs.keys()))
     pass
 
 
