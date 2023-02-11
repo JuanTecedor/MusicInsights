@@ -4,6 +4,7 @@ import requests
 
 from library.song import Song
 from library.library import Library
+from library.artist import Artist
 from utils import split_list_in_chunks
 
 
@@ -26,6 +27,7 @@ class UnableToAddSongsToPlaylistException(Exception):
 class SpotifyClient:
     _BASE_URL = "https://api.spotify.com/v1"
     _SAVED_TRACKS_URL = _BASE_URL + "/me/tracks"
+    _ARTISTS_URL = _BASE_URL + "/artists"
 
     def __init__(self, token: str) -> None:
         self.token = token
@@ -102,6 +104,19 @@ class SpotifyClient:
             if next_url is None:
                 break
         return songs
+
+    def get_artists(self, ids: List[Artist.ArtistId_Type]) -> Library.ArtistsContainer_Type:
+        id_chunks = split_list_in_chunks(ids, 50)
+        for id_chunk in id_chunks:
+            response = requests.get(
+                url=self._ARTISTS_URL,
+                headers=self._get_common_headers(),
+                params={
+                    "ids": id_chunk
+                }
+            )
+            pass
+        pass
 
     # TODO update
     def create_playlist(
