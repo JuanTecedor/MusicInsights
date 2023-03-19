@@ -5,6 +5,7 @@ from typing import Dict, List
 from library.album import Album
 from library.artist import Artist
 from library.song import Song
+from utils.json_serializable import JSONSerializableSubClass
 
 
 class LibraryFilePaths:
@@ -29,37 +30,27 @@ class Library:
         self._albums = albums
         self._artists = artists
 
+    @staticmethod
+    def _save_dict_to_file(
+        data: Dict[str, JSONSerializableSubClass],
+        path: str,
+        indent: int = 4
+    ) -> None:
+        with open(path, "w") as file:
+            json.dump(
+                {
+                    item_id: item.to_json_dict()
+                    for item_id, item
+                    in data.items()
+                },
+                file,
+                indent=indent
+            )
+
     def save_to_file(self) -> None:
-        with open(LibraryFilePaths.SONGS_PATH, "w") as file:
-            json.dump(
-                {
-                    song_id: song_data.to_json_dict()
-                    for song_id, song_data
-                    in self._songs.items()
-                },
-                file,
-                indent=4
-            )
-        with open(LibraryFilePaths.ARTISTS_PATH, "w") as file:
-            json.dump(
-                {
-                    artist_id: artist_data.to_json_dict()
-                    for artist_id, artist_data
-                    in self._artists.items()
-                },
-                file,
-                indent=4
-            )
-        with open(LibraryFilePaths.ALBUMS_PATH, "w") as file:
-            json.dump(
-                {
-                    album_id: album_data.to_json_dict()
-                    for album_id, album_data
-                    in self._albums.items()
-                },
-                file,
-                indent=4
-            )
+        self._save_dict_to_file(self._songs, LibraryFilePaths.SONGS_PATH)
+        self._save_dict_to_file(self._artists, LibraryFilePaths.ARTISTS_PATH)
+        self._save_dict_to_file(self._albums, LibraryFilePaths.ALBUMS_PATH)
 
     def get_songs_by_decades(self) -> Dict[int, List[Song.IDType]]:
         songs_by_decades = {}

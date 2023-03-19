@@ -1,6 +1,6 @@
 from abc import ABC
 from datetime import datetime, date
-from typing import Any, Dict, List, Self
+from typing import Any, Dict, List, Self, TypeVar
 
 
 class JSONSerializable(ABC):
@@ -25,3 +25,9 @@ class JSONSerializable(ABC):
     @classmethod
     def from_json_dict(cls, data: Dict[str, JSON_Types]) -> Self:
         return cls(**data)
+
+
+JSONSerializableSubClass = TypeVar(
+    "JSONSerializableSubClass",
+    bound=JSONSerializable
+)
