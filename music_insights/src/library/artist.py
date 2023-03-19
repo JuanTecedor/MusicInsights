@@ -1,4 +1,5 @@
 from typing import List
+
 from attrs import define
 
 from library.attr_serialization import AttrSerialization

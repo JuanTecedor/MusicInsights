@@ -1,12 +1,10 @@
-
 import json
 import os
-from typing import Dict, TypeAlias
+from typing import Dict, List, TypeAlias
 
-
-from library.song import Song
 from library.album import Album
 from library.artist import Artist
+from library.song import Song
 
 
 class LibraryFilePaths:
@@ -62,3 +60,14 @@ class Library:
                 file,
                 indent=4
             )
+
+    def get_songs_by_decades(self) -> Dict[int, List[Song.SongId_Type]]:
+        songs_by_decades = {}
+        for song_id, song_data in self._songs.items():
+            year = self._albums[song_data.album_id].release_date.year
+            decade = year - (year % 10)
+            if decade in songs_by_decades:
+                songs_by_decades[decade].append(song_id)
+            else:
+                songs_by_decades[decade] = [song_id]
+        return songs_by_decades

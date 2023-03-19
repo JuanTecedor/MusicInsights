@@ -1,13 +1,12 @@
-from abc import ABC, abstractmethod
 import json
 import logging
+from abc import ABC, abstractmethod
 from typing import List, Self
 
-from spotify.spotifyClient import SpotifyClient, UnableToGetTracksException
+from library.album import Album, Artist
 from library.library import Library, LibraryFilePaths
 from library.song import Song
-from library.album import Album
-from library.album import Artist
+from spotify.spotifyClient import SpotifyClient, UnableToGetTracksException
 
 
 class UnableToGetLibrary(Exception):
@@ -23,41 +22,37 @@ class LibraryReader(ABC):
 class LibraryReaderFromFile(LibraryReader):
     def get_library(self) -> Library:
         try:
+            logging.info("Loading library from file ")
             with open(LibraryFilePaths.SONGS_PATH, "r") as file:
-                logging.info(
-                    "File found, loading library from file "
-                    " if you want to force a refresh, delete "
-                    f"or rename {LibraryFilePaths.SONGS_PATH}"
-                )
                 library_songs = {
                     song_id: Song.from_json_dict(song_data)
                     for song_id, song_data
                     in json.load(file).items()
                 }
+            with open(LibraryFilePaths.ALBUMS_PATH, "r") as file:
                 library_albums = {
                     album_id: Album.from_json_dict(album_data)
                     for album_id, album_data
                     in json.load(file).items()
                 }
+            with open(LibraryFilePaths.ARTISTS_PATH, "r") as file:
                 library_artists = {
                     artist_id: Artist.from_json_dict(artist_data)
                     for artist_id, artist_data
                     in json.load(file).items()
                 }
-                return Library(library_songs, library_albums, library_artists)
+            return Library(library_songs, library_albums, library_artists)
         except FileNotFoundError as ex:
             raise UnableToGetLibrary(ex)
 
 
 class LibraryReaderFromAPI(LibraryReader):
-    def __init__(self, client: SpotifyClient) -> None:
-        self._client = client
-
     def get_library(self) -> Library:
+        client = SpotifyClient.read_only_client()
         try:
             logging.info("Loading library from API")
-            songs = self._client.get_liked_songs()
-            artists = self._client.get_artists(list(
+            songs = client.get_liked_songs()
+            artists = client.get_artists(list(
                 {
                     album_id
                     for song
@@ -66,7 +61,7 @@ class LibraryReaderFromAPI(LibraryReader):
                     in song.artists
                 }
             ))
-            albums = self._client.get_albums(list(
+            albums = client.get_albums(list(
                 {
                     song.album_id
                     for song
@@ -90,12 +85,12 @@ class LibraryReaderChain(LibraryReader):
     def default(cls) -> Self:
         return cls([
             LibraryReaderFromFile(),
-            LibraryReaderFromAPI(SpotifyClient.read_only_client())
+            LibraryReaderFromAPI()
         ])
 
     @classmethod
-    def force_download(cls) -> Self:
-        return cls([LibraryReaderFromAPI(SpotifyClient.read_only_client())])
+    def only_api(cls) -> Self:
+        return cls([LibraryReaderFromAPI()])
 
     def get_library(self) -> Library:
         for reader in self._readers:

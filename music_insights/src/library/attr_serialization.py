@@ -1,16 +1,16 @@
 from abc import ABC
-import json
-from typing import Dict, Self, Type
+from typing import Dict, Self
 
 import attrs
 from attrs import asdict
 
-from library.item_encoder import JSON_Types, JSONEncoder
+from library.item_encoder import JSONEncoder
 
 
 class AttrSerialization(ABC):
-    def to_json_dict(self: attrs.AttrsInstance) -> Dict[JSON_Types, JSON_Types]:
-        if not attrs.has(self):
+    def to_json_dict(self: attrs.AttrsInstance) \
+            -> Dict[JSONEncoder.JSON_Types, JSONEncoder.JSON_Types]:
+        if not attrs.has(self):  # type: ignore
             raise TypeError(
                 "Only attrs classes can be serialized."
             )
@@ -21,5 +21,5 @@ class AttrSerialization(ABC):
         }
 
     @classmethod
-    def from_json_dict(cls, data: Dict[str, JSON_Types]) -> Self:
+    def from_json_dict(cls, data: Dict[str, JSONEncoder.JSON_Types]) -> Self:
         return cls(**data)

@@ -1,17 +1,15 @@
-from datetime import datetime
+from datetime import datetime, date
 from typing import Any, Dict, List, Union
-from attr import define
-
-
-JSON_Types = Union[str, int, List, Dict, bool, None]
 
 
 class JSONEncoder():
+    JSON_Types = Union[str, int, List, Dict, bool, None]
+
     @staticmethod
     def to_json(value: Any) -> JSON_Types:
-        if isinstance(value, JSON_Types):
+        if isinstance(value, JSONEncoder.JSON_Types):
             return value
-        elif isinstance(value, datetime):
+        elif isinstance(value, datetime) or isinstance(value, date):
             return value.isoformat()
         else:
             TypeError()
