@@ -1,5 +1,5 @@
 from abc import ABC
-from datetime import datetime, date
+from datetime import date, datetime
 from typing import Any, Dict, List, Self, TypeVar
 
 

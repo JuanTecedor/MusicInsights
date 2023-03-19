@@ -1,0 +1,37 @@
+name: Python package
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11"]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: CD to directory
+        run: |
+          cd music_insights
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+      - name: Lint with flake8
+        run: |
+          flake8 src
+          flake8 test
+      - name: isort
+        run: |
+          isort src --check-only --diff
+          isort test --check-only --diff
+      # TODO
+      # - name: Test with pytest
+      #   run: |
+      #     pytest
