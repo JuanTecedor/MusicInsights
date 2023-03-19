@@ -16,21 +16,18 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-      - name: CD to directory
-        run: |
-          cd music_insights
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements-dev.txt
+          pip install -r music_insights/requirements-dev.txt
       - name: Lint with flake8
         run: |
-          flake8 src
-          flake8 test
+          flake8 music_insights/src
+          flake8 music_insights/test
       - name: isort
         run: |
-          isort src --check-only --diff
-          isort test --check-only --diff
+          isort music_insights/src --check-only --diff
+          isort music_insights/test --check-only --diff
       # TODO
       # - name: Test with pytest
       #   run: |
