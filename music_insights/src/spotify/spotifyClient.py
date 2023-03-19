@@ -1,10 +1,11 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Self
 
 import requests
 
 from library.song import Song
 from library.library import Library
 from library.artist import Artist
+from spotify.spotifyAuthenticator import SpotifyAuthenticator
 from utils import split_list_in_chunks
 
 
@@ -24,16 +25,37 @@ class UnableToAddSongsToPlaylistException(Exception):
     pass
 
 
+class UnableToGetArtistsException(Exception):
+    pass
+
+
 class SpotifyClient:
     _BASE_URL = "https://api.spotify.com/v1"
     _SAVED_TRACKS_URL = _BASE_URL + "/me/tracks"
     _ARTISTS_URL = _BASE_URL + "/artists"
 
     def __init__(self, token: str) -> None:
-        self.token = token
+        self._token = token
         self.user_id = self._get_user_id()
         self.CREATE_PLAYLIST_URL = self._BASE_URL \
             + f"/users/{self.user_id}/playlists"
+
+    @classmethod
+    def read_only_client(cls) -> Self:
+        return cls(
+            SpotifyAuthenticator().authenticate(
+                [SpotifyAuthenticator.AvailableScopes.USER_LIBRARY_READ]
+            )
+        )
+
+    @classmethod
+    def read_write_playlist_client(cls) -> Self:
+        return cls(
+            SpotifyAuthenticator().authenticate([
+                SpotifyAuthenticator.AvailableScopes.PLAYLIST_READ_PRIVATE,
+                SpotifyAuthenticator.AvailableScopes.PLAYLIST_MODIFY_PRIVATE
+            ])
+        )
 
     def _get_user_id(self) -> None:
         response = requests.get(
@@ -48,9 +70,24 @@ class SpotifyClient:
 
     def _get_common_headers(self) -> Dict[str, str]:
         return {
-            "Authorization": f"Bearer {self.token}",
+            "Authorization": f"Bearer {self._token}",
             "Content-Type": "application/json",
         }
+
+    def _request_songs(self, alternate_url: Optional[str] = None) \
+            -> requests.Response:
+        response = requests.get(
+            url=alternate_url or self._SAVED_TRACKS_URL,
+            headers=self._get_common_headers(),
+            params={
+                "limit": 50
+            }
+        )
+        if response.status_code != 200:
+            raise UnableToGetTracksException(
+                f"The response status code was {response.status_code}"
+            )
+        return response
 
     @staticmethod
     def _parse_songs(json_response_items: List[Dict[str, Any]]) \
@@ -78,21 +115,6 @@ class SpotifyClient:
             )
         return songs
 
-    def _request_songs(self, alternate_url: Optional[str] = None) \
-            -> requests.Response:
-        response = requests.get(
-            url=alternate_url or self._SAVED_TRACKS_URL,
-            headers=self._get_common_headers(),
-            params={
-                "limit": 50
-            }
-        )
-        if response.status_code != 200:
-            raise UnableToGetTracksException(
-                f"The response status code was {response.status_code}"
-            )
-        return response
-
     def get_liked_songs(self) -> Library.SongsContainer_Type:
         songs = {}
         next_url = None
@@ -105,18 +127,37 @@ class SpotifyClient:
                 break
         return songs
 
-    def get_artists(self, ids: List[Artist.ArtistId_Type]) -> Library.ArtistsContainer_Type:
+    @staticmethod
+    def _parse_artists(json_response_items: List[Dict[str, Any]]) \
+            -> Dict[Artist.ArtistId_Type, Artist]:
+        artists = {}
+        for artist_data in json_response_items:
+            artist_id = artist_data["id"]
+            artists[artist_id] = Artist(
+                artist_data["name"],
+                artist_data["id"],
+                artist_data["followers"]["total"],
+                artist_data["genres"],
+                artist_data["popularity"]
+            )
+        return artists
+
+    def get_artists(self, ids: List[Artist.ArtistId_Type]) \
+            -> Library.ArtistsContainer_Type:
+        artists = {}
         id_chunks = split_list_in_chunks(ids, 50)
         for id_chunk in id_chunks:
             response = requests.get(
                 url=self._ARTISTS_URL,
                 headers=self._get_common_headers(),
-                params={
-                    "ids": id_chunk
-                }
+                params={"ids": ",".join(id_chunk)}
             )
-            pass
-        pass
+            if response.status_code != 200:
+                raise UnableToGetArtistsException(
+                    f"The response status code was not 200\n{response.text}"
+                )
+            artists = artists | self._parse_artists(response.json()["artists"])
+        return artists
 
     # TODO update
     def create_playlist(

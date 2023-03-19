@@ -8,7 +8,7 @@ from library.song import Song
 
 
 @define
-class Album():
+class Album():  # TODO
     AlbumId_Type = str
     AlbumName_Type = str
 

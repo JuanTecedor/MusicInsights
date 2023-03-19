@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List
 
-from attrs import define, field, asdict
+from attrs import define, field
 
 from library.artist import Artist
 from library.attr_serialization import AttrSerialization
@@ -25,4 +25,3 @@ class Song(AttrSerialization):
     album_id: str
     disc_number: int
     is_local: bool
-    preview_url: str = ""
