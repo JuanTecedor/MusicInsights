@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from typing import ClassVar, List
+from typing import List
 
 from library.artist import Artist
 from library.song import Song
@@ -11,8 +11,8 @@ class UnknownDatePrecisionException(Exception):
 
 
 class Album(JSONSerializable):
-    IDType: ClassVar = str
-    NameType: ClassVar = str
+    IDType = str
+    NameType = str
 
     def __init__(
         self,

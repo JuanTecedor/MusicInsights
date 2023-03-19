@@ -1,13 +1,13 @@
 from datetime import datetime
-from typing import ClassVar, List
+from typing import List
 
 from library.artist import Artist
 from utils.json_serializable import JSONSerializable
 
 
 class Song(JSONSerializable):
-    IDType: ClassVar = str
-    NameType: ClassVar = str
+    IDType = str
+    NameType = str
 
     def __init__(
         self,

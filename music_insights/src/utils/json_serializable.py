@@ -23,7 +23,7 @@ class JSONSerializable(ABC):
         }
 
     @classmethod
-    def from_json_dict(cls, data: Dict[str, JSON_Types]) -> Self:
+    def from_json_dict(cls, data: Dict[JSON_Types, JSON_Types]) -> Self:
         return cls(**data)
 
 

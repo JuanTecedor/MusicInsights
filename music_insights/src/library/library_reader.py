@@ -98,4 +98,4 @@ class LibraryReaderChain(LibraryReader):
                 return reader.get_library()
             except UnableToGetLibrary:
                 continue
-        raise UnableToGetLibrary()
+        raise UnableToGetLibrary("Could not load library")
