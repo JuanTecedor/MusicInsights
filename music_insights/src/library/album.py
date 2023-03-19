@@ -1,33 +1,52 @@
-from datetime import date
-from typing import Dict, List, Self
-
-from attrs import define
+from datetime import date, datetime
+from typing import ClassVar, List
 
 from library.artist import Artist
-from library.attr_serialization import AttrSerialization
-from library.item_encoder import JSONEncoder
 from library.song import Song
+from utils.json_serializable import JSONSerializable
 
 
 class UnknownDatePrecisionException(Exception):
     pass
 
 
-@define
-class Album(AttrSerialization):
-    AlbumId_Type = str
-    AlbumName_Type = str
+class Album(JSONSerializable):
+    IDType: ClassVar = str
+    NameType: ClassVar = str
 
-    artists: List[Artist.ArtistId_Type]
-    album_id: AlbumId_Type
-    name: AlbumName_Type
-    release_date: date
-    release_date_precision: str
-    songs: List[Song.SongId_Type]
-    total_tracks: int
-    genres: List[str]
-    label: str
-    popularity: int
+    def __init__(
+        self,
+        artists: List[Artist.IDType],
+        album_id: IDType,
+        name: NameType,
+        release_date: str,
+        release_date_precision: str,
+        songs: List[Song.IDType],
+        total_tracks: int,
+        genres: List[str],
+        label: str,
+        popularity: int
+    ) -> None:
+        self.artists = artists
+        self.album_id = album_id
+        self.name = name
+        date_format = Album.date_precision_to_date_format(
+            release_date_precision
+        )
+        try:
+            self.release_date = datetime.strptime(
+                release_date,
+                date_format
+            ).date()
+        except ValueError:
+            # When loading back from file we always find the full string
+            self.release_date = date.fromisoformat(release_date)
+        self.release_date_precision = release_date_precision
+        self.songs = songs
+        self.total_tracks = total_tracks
+        self.genres = genres
+        self.label = label
+        self.popularity = popularity
 
     @staticmethod
     def date_precision_to_date_format(precision: str) -> str:
@@ -41,10 +60,3 @@ class Album(AttrSerialization):
             raise UnknownDatePrecisionException(
                 f"The precision of the date is unknown {precision}."
             )
-
-    @classmethod
-    def from_json_dict(cls, data: Dict[str, JSONEncoder.JSON_Types]) -> Self:
-        album = super().from_json_dict(data)
-        album.release_date = \
-            date.fromisoformat(album.release_date)  # type: ignore
-        return album

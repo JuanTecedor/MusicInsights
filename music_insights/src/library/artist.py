@@ -1,17 +1,16 @@
-from typing import List
+from dataclasses import dataclass
+from typing import ClassVar, List
 
-from attrs import define
-
-from library.attr_serialization import AttrSerialization
+from utils.json_serializable import JSONSerializable
 
 
-@define
-class Artist(AttrSerialization):
-    ArtistId_Type = str
-    ArtistName_Type = str
+@dataclass
+class Artist(JSONSerializable):
+    IDType: ClassVar = str
+    NameType: ClassVar = str
 
-    name: ArtistName_Type
-    artist_id: ArtistId_Type
+    name: NameType
+    artist_id: IDType
     followers: int
     genres: List[str]
     popularity: int

@@ -10,7 +10,7 @@ from src.library.song import Song
 @fixture
 def example_song() -> Song:
     return Song(
-        added_at="2023-01-26T23:47:21Z", # type: ignore
+        added_at="2023-01-26T23:47:21Z",
         song_id="song_id",
         album_id="album_id",
         popularity=40,

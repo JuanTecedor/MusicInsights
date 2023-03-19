@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Dict, List, TypeAlias
+from typing import Dict, List
 
 from library.album import Album
 from library.artist import Artist
@@ -15,15 +15,15 @@ class LibraryFilePaths:
 
 
 class Library:
-    SongsContainer_Type: TypeAlias = Dict[Song.SongId_Type, Song]
-    AlbumsContainer_Type: TypeAlias = Dict[Album.AlbumId_Type, Album]
-    ArtistsContainer_Type: TypeAlias = Dict[Artist.ArtistId_Type, Artist]
+    SongsContainerType = Dict[Song.IDType, Song]
+    AlbumsContainerType = Dict[Album.IDType, Album]
+    ArtistsContainerType = Dict[Artist.IDType, Artist]
 
     def __init__(
         self,
-        songs: Dict[Song.SongId_Type, Song],
-        albums: Dict[Album.AlbumId_Type, Album],
-        artists: Dict[Artist.ArtistId_Type, Artist]
+        songs: Dict[Song.IDType, Song],
+        albums: Dict[Album.IDType, Album],
+        artists: Dict[Artist.IDType, Artist]
     ) -> None:
         self._songs = songs
         self._albums = albums
@@ -61,7 +61,7 @@ class Library:
                 indent=4
             )
 
-    def get_songs_by_decades(self) -> Dict[int, List[Song.SongId_Type]]:
+    def get_songs_by_decades(self) -> Dict[int, List[Song.IDType]]:
         songs_by_decades = {}
         for song_id, song_data in self._songs.items():
             year = self._albums[song_data.album_id].release_date.year

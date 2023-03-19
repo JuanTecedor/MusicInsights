@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Any, Dict, List, Optional, Self
 
 import requests
@@ -8,7 +7,7 @@ from library.artist import Artist
 from library.library import Library
 from library.song import Song
 from spotify.spotifyAuthenticator import SpotifyAuthenticator
-from utils import split_list_in_chunks
+from utils.utils import split_list_in_chunks
 
 
 class UnableToGetUserIDException(Exception):
@@ -98,7 +97,7 @@ class SpotifyClient:
 
     @staticmethod
     def _parse_songs(json_response_items: List[Dict[str, Any]]) \
-            -> Dict[Song.SongId_Type, Song]:
+            -> Dict[Song.IDType, Song]:
         songs = {}
         for song_data in json_response_items:
             track_data = song_data["track"]
@@ -122,7 +121,7 @@ class SpotifyClient:
             )
         return songs
 
-    def get_liked_songs(self) -> Library.SongsContainer_Type:
+    def get_liked_songs(self) -> Library.SongsContainerType:
         songs = {}
         next_url = None
         while True:
@@ -136,7 +135,7 @@ class SpotifyClient:
 
     @staticmethod
     def _parse_artists(json_response_items: List[Dict[str, Any]]) \
-            -> Dict[Artist.ArtistId_Type, Artist]:
+            -> Dict[Artist.IDType, Artist]:
         artists = {}
         for artist_data in json_response_items:
             artist_id = artist_data["id"]
@@ -149,8 +148,8 @@ class SpotifyClient:
             )
         return artists
 
-    def get_artists(self, ids: List[Artist.ArtistId_Type]) \
-            -> Library.ArtistsContainer_Type:
+    def get_artists(self, ids: List[Artist.IDType]) \
+            -> Library.ArtistsContainerType:
         artists = {}
         id_chunks = split_list_in_chunks(ids, 50)
         for id_chunk in id_chunks:
@@ -168,22 +167,15 @@ class SpotifyClient:
 
     @staticmethod
     def _parse_albums(json_response_items: List[Dict[str, Any]]) \
-            -> Dict[Album.AlbumId_Type, Album]:
+            -> Dict[Album.IDType, Album]:
         albums = {}
         for album_data in json_response_items:
             album_id = album_data["id"]
-            date_format = Album.date_precision_to_date_format(
-                album_data["release_date_precision"]
-            )
-            release_date = datetime.strptime(
-                album_data["release_date"],
-                date_format
-            ).date()
             albums[album_id] = Album(
                 [artist_data["id"] for artist_data in album_data["artists"]],
                 album_data["id"],
                 album_data["name"],
-                release_date,
+                album_data["release_date"],
                 album_data["release_date_precision"],
                 [
                     song_data["id"]
@@ -197,8 +189,8 @@ class SpotifyClient:
             )
         return albums
 
-    def get_albums(self, ids: List[Album.AlbumId_Type]) \
-            -> Library.AlbumsContainer_Type:
+    def get_albums(self, ids: List[Album.IDType]) \
+            -> Library.AlbumsContainerType:
         albums = {}
         id_chunks = split_list_in_chunks(ids, 20)
         for id_chunk in id_chunks:
@@ -215,7 +207,7 @@ class SpotifyClient:
         return albums
 
     def create_playlist(
-        self, playlist_name: str, song_list: List[Song.SongId_Type]
+        self, playlist_name: str, song_list: List[Song.IDType]
     ) -> None:
         data = {
             "name": playlist_name,
@@ -238,7 +230,7 @@ class SpotifyClient:
         self._add_songs_to_playlist(playlist_id, song_list)
 
     def _add_songs_to_playlist(
-        self, playlist_id: str, song_list: List[Song.SongId_Type]
+        self, playlist_id: str, song_list: List[Song.IDType]
     ) -> None:
         max_size = 100
         splitted_song_list = split_list_in_chunks(song_list, max_size)
