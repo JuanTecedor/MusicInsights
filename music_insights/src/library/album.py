@@ -5,10 +5,11 @@ from attrs import define
 
 from library.artist import Artist
 from library.song import Song
+from library.attr_serialization import AttrSerialization
 
 
 @define
-class Album():  # TODO
+class Album(AttrSerialization):
     AlbumId_Type = str
     AlbumName_Type = str
 
@@ -19,3 +20,6 @@ class Album():  # TODO
     release_date_precision: str
     songs: List[Song.SongId_Type]
     total_tracks: int
+    genres: List[str]
+    label: str
+    popularity: int

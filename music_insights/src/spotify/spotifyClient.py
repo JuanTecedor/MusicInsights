@@ -6,6 +6,7 @@ from library.song import Song
 from library.library import Library
 from library.artist import Artist
 from spotify.spotifyAuthenticator import SpotifyAuthenticator
+from library.album import Album
 from utils import split_list_in_chunks
 
 
@@ -17,6 +18,14 @@ class UnableToGetTracksException(Exception):
     pass
 
 
+class UnableToGetArtistsException(Exception):
+    pass
+
+
+class UnableToGetAlbumsException(Exception):
+    pass
+
+
 class UnableToCreatePlaylistException(Exception):
     pass
 
@@ -25,14 +34,11 @@ class UnableToAddSongsToPlaylistException(Exception):
     pass
 
 
-class UnableToGetArtistsException(Exception):
-    pass
-
-
 class SpotifyClient:
     _BASE_URL = "https://api.spotify.com/v1"
     _SAVED_TRACKS_URL = _BASE_URL + "/me/tracks"
     _ARTISTS_URL = _BASE_URL + "/artists"
+    _ALBUMS_URL = _BASE_URL + "/albums"
 
     def __init__(self, token: str) -> None:
         self._token = token
@@ -158,6 +164,47 @@ class SpotifyClient:
                 )
             artists = artists | self._parse_artists(response.json()["artists"])
         return artists
+
+    @staticmethod
+    def _parse_albums(json_response_items: List[Dict[str, Any]]) \
+            -> Dict[Album.AlbumId_Type, Album]:
+        albums = {}
+        for album_data in json_response_items:
+            album_id = album_data["id"]
+            albums[album_id] = Album(
+                [artist_data["id"] for artist_data in album_data["artists"]],
+                album_data["id"],
+                album_data["name"],
+                album_data["release_date"],
+                album_data["release_date_precision"],
+                [
+                    song_data["id"]
+                    for song_data
+                    in album_data["tracks"]["items"]
+                ],
+                album_data["total_tracks"],
+                album_data["genres"],
+                album_data["label"],
+                album_data["popularity"]
+            )
+        return albums
+
+    def get_albums(self, ids: List[Album.AlbumId_Type]) \
+            -> Library.AlbumsContainer_Type:
+        albums = {}
+        id_chunks = split_list_in_chunks(ids, 20)
+        for id_chunk in id_chunks:
+            response = requests.get(
+                url=self._ALBUMS_URL,
+                headers=self._get_common_headers(),
+                params={"ids": ",".join(id_chunk)}
+            )
+            if response.status_code != 200:
+                raise UnableToGetAlbumsException(
+                    f"The response status code was not 200\n{response.text}"
+                )
+            albums = albums | self._parse_albums(response.json()["albums"])
+        return albums
 
     # TODO update
     def create_playlist(

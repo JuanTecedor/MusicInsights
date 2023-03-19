@@ -6,6 +6,8 @@ from typing import List, Self
 from spotify.spotifyClient import SpotifyClient, UnableToGetTracksException
 from library.library import Library, LibraryFilePaths
 from library.song import Song
+from library.album import Album
+from library.album import Artist
 
 
 class UnableToGetLibrary(Exception):
@@ -32,7 +34,17 @@ class LibraryReaderFromFile(LibraryReader):
                     for song_id, song_data
                     in json.load(file).items()
                 }
-                return Library(library_songs, {}, {})  # TODO
+                library_albums = {
+                    album_id: Album.from_json_dict(album_data)
+                    for album_id, album_data
+                    in json.load(file).items()
+                }
+                library_artists = {
+                    artist_id: Artist.from_json_dict(artist_data)
+                    for artist_id, artist_data
+                    in json.load(file).items()
+                }
+                return Library(library_songs, library_albums, library_artists)
         except FileNotFoundError as ex:
             raise UnableToGetLibrary(ex)
 
@@ -54,11 +66,18 @@ class LibraryReaderFromAPI(LibraryReader):
                     in song.artists
                 }
             ))
+            albums = self._client.get_albums(list(
+                {
+                    song.album_id
+                    for song
+                    in songs.values()
+                }
+            ))
             return Library(
                 songs=songs,
-                albums={},
+                albums=albums,
                 artists=artists
-            )  # TODO
+            )
         except UnableToGetTracksException as ex:
             raise UnableToGetLibrary(ex)
 

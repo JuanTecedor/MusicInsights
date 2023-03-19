@@ -13,6 +13,7 @@ class LibraryFilePaths:
     FILE_PATH = os.path.join("out")
     SONGS_PATH = os.path.join(FILE_PATH, "songs.json")
     ARTISTS_PATH = os.path.join(FILE_PATH, "artists.json")
+    ALBUMS_PATH = os.path.join(FILE_PATH, "albums.json")
 
 
 class Library:
@@ -51,4 +52,13 @@ class Library:
                 file,
                 indent=4
             )
-        # TODO
+        with open(LibraryFilePaths.ALBUMS_PATH, "w") as file:
+            json.dump(
+                {
+                    album_id: album_data.to_json_dict()
+                    for album_id, album_data
+                    in self._albums.items()
+                },
+                file,
+                indent=4
+            )
