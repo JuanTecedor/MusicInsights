@@ -1,6 +1,5 @@
-from pytest import fixture
-
 from music_insights.library.song import Song
+from pytest import fixture
 
 
 @fixture

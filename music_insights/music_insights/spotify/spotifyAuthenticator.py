@@ -2,7 +2,6 @@ import re
 from enum import Enum
 
 import requests
-
 from music_insights.spotify.credentials import client_id
 
 

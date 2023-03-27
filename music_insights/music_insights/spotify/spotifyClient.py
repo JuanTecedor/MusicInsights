@@ -1,7 +1,6 @@
 from typing import Any, Optional, Self
 
 import requests
-
 from music_insights.library.album import Album
 from music_insights.library.artist import Artist
 from music_insights.library.library import Library
