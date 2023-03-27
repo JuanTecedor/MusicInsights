@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import ClassVar
+from typing import Any, ClassVar
 
 from music_insights.utils.json_serializable import JSONSerializable
 
@@ -14,3 +14,8 @@ class Artist(JSONSerializable):
     followers: int
     genres: list[str]
     popularity: int
+
+    def __eq__(self, other: Any) -> bool:
+        if isinstance(self, Artist):
+            return vars(self) == vars(other)
+        return False

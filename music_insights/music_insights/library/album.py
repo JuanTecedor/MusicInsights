@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from typing import Any
 
 from music_insights.library.artist import Artist
 from music_insights.library.song import Song
@@ -59,3 +60,8 @@ class Album(JSONSerializable):
             raise UnknownDatePrecisionException(
                 f"The precision of the date is unknown {precision}."
             )
+
+    def __eq__(self, other: Any) -> bool:
+        if isinstance(self, Album):
+            return vars(self) == vars(other)
+        return False

@@ -1,7 +1,6 @@
 from pytest import fixture
 
-# sys.path.append("src")
-from src.library.song import Song
+from music_insights.library.song import Song
 
 
 @fixture
@@ -21,6 +20,7 @@ def example_song() -> Song:
     )
 
 
-def test_serialization(example_song: Song):
-    deserialized = Song.from_json_dict(example_song.to_json_dict())
-    assert example_song == deserialized
+class TestSong:
+    def test_serialization(self, example_song: Song):
+        deserialized = Song.from_json_dict(example_song.to_json_dict())
+        assert example_song == deserialized

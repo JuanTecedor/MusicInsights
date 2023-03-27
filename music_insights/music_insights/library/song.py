@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any
 
 from music_insights.library.artist import Artist
 from music_insights.utils.json_serializable import JSONSerializable
@@ -33,3 +34,8 @@ class Song(JSONSerializable):
         self.album_id = album_id
         self.disc_number = disc_number
         self.is_local = is_local
+
+    def __eq__(self, other: Any) -> bool:
+        if isinstance(self, Song):
+            return vars(self) == vars(other)
+        return False
