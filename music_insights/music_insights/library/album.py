@@ -1,9 +1,8 @@
 from datetime import date, datetime
-from typing import List
 
-from library.artist import Artist
-from library.song import Song
-from utils.json_serializable import JSONSerializable
+from music_insights.library.artist import Artist
+from music_insights.library.song import Song
+from music_insights.utils.json_serializable import JSONSerializable
 
 
 class UnknownDatePrecisionException(Exception):
@@ -16,14 +15,14 @@ class Album(JSONSerializable):
 
     def __init__(
         self,
-        artists: List[Artist.IDType],
+        artists: list[Artist.IDType],
         album_id: IDType,
         name: NameType,
         release_date: str,
         release_date_precision: str,
-        songs: List[Song.IDType],
+        songs: list[Song.IDType],
         total_tracks: int,
-        genres: List[str],
+        genres: list[str],
         label: str,
         popularity: int
     ) -> None:

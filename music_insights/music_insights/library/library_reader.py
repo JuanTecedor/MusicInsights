@@ -1,12 +1,14 @@
 import json
 import logging
 from abc import ABC, abstractmethod
-from typing import List, Self
+from typing import Self
 
-from library.album import Album, Artist
-from library.library import Library, LibraryFilePaths
-from library.song import Song
-from spotify.spotifyClient import SpotifyClient, UnableToGetTracksException
+from music_insights.library.album import Album
+from music_insights.library.artist import Artist
+from music_insights.library.library import Library, LibraryFilePaths
+from music_insights.library.song import Song
+from music_insights.spotify.spotifyClient import (SpotifyClient,
+                                                  UnableToGetTracksException)
 
 
 class UnableToGetLibrary(Exception):
@@ -78,7 +80,7 @@ class LibraryReaderFromAPI(LibraryReader):
 
 
 class LibraryReaderChain(LibraryReader):
-    def __init__(self, library_readers: List[LibraryReader]) -> None:
+    def __init__(self, library_readers: list[LibraryReader]) -> None:
         self._readers = library_readers
 
     @classmethod

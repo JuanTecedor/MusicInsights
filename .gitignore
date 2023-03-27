@@ -161,7 +161,6 @@ cython_debug/
 
 # My ignores
 .idea/
-credentials.py
 *.json
 __pycache__/
 **/out/*.txt

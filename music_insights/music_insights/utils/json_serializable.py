@@ -1,10 +1,10 @@
 from abc import ABC
 from datetime import date, datetime
-from typing import Any, Dict, List, Self, TypeVar
+from typing import Any, Self, TypeVar
 
 
 class JSONSerializable(ABC):
-    JSON_Types = str | int | List | Dict | bool | None
+    JSON_Types = str | int | list | dict | bool | None
 
     @staticmethod
     def _to_json(value: Any) -> JSON_Types:
@@ -15,7 +15,7 @@ class JSONSerializable(ABC):
         else:
             TypeError(f"The type {type(value)} is not serializable.")
 
-    def to_json_dict(self: Any) -> Dict[JSON_Types, JSON_Types]:
+    def to_json_dict(self: Any) -> dict[JSON_Types, JSON_Types]:
         return {
             variable_name: JSONSerializable._to_json(variable_value)
             for variable_name, variable_value
@@ -23,7 +23,7 @@ class JSONSerializable(ABC):
         }
 
     @classmethod
-    def from_json_dict(cls, data: Dict[JSON_Types, JSON_Types]) -> Self:
+    def from_json_dict(cls, data: dict[JSON_Types, JSON_Types]) -> Self:
         return cls(**data)
 
 

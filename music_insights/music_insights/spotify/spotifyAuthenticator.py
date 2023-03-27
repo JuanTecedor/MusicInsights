@@ -1,10 +1,9 @@
 import re
 from enum import Enum
-from typing import List
 
 import requests
 
-from spotify.credentials import client_id
+from music_insights.spotify.credentials import client_id
 
 
 class BadStatusCodeException(Exception):
@@ -33,7 +32,7 @@ class SpotifyAuthenticator:
         return search.group(1)
 
     @staticmethod
-    def authenticate(scope: List[AvailableScopes]) -> str:
+    def authenticate(scope: list[AvailableScopes]) -> str:
         # Implicit grant
         # https://developer.spotify.com/documentation/general/guides/authorization/implicit-grant/
         scope_str_list = [scope.value for scope in scope]

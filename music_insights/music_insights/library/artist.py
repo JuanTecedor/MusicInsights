@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-from typing import ClassVar, List
+from typing import ClassVar
 
-from utils.json_serializable import JSONSerializable
+from music_insights.utils.json_serializable import JSONSerializable
 
 
 @dataclass
@@ -12,5 +12,5 @@ class Artist(JSONSerializable):
     name: NameType
     artist_id: IDType
     followers: int
-    genres: List[str]
+    genres: list[str]
     popularity: int

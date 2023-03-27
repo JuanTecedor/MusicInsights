@@ -1,8 +1,7 @@
 from datetime import datetime
-from typing import List
 
-from library.artist import Artist
-from utils.json_serializable import JSONSerializable
+from music_insights.library.artist import Artist
+from music_insights.utils.json_serializable import JSONSerializable
 
 
 class Song(JSONSerializable):
@@ -13,7 +12,7 @@ class Song(JSONSerializable):
         self,
         song_id: IDType,
         added_at: str,
-        artists: List[Artist.IDType],
+        artists: list[Artist.IDType],
         duration_ms: int,
         explicit: bool,
         name: NameType,

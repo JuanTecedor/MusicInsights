@@ -1,6 +1,6 @@
-from argument_parser import get_parser_args
-from library.library_reader import LibraryReaderChain
-from spotify.spotifyClient import SpotifyClient
+from music_insights.argument_parser import get_parser_args
+from music_insights.library.library_reader import LibraryReaderChain
+from music_insights.spotify.spotifyClient import SpotifyClient
 
 if __name__ == "__main__":
     arguments = get_parser_args()
