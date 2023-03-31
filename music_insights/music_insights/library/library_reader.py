@@ -7,8 +7,8 @@ from music_insights.library.album import Album
 from music_insights.library.artist import Artist
 from music_insights.library.library import Library, LibraryFilePaths
 from music_insights.library.song import Song
-from music_insights.spotify.spotifyClient import (SpotifyClient,
-                                                  UnableToGetTracksException)
+from music_insights.spotify.spotifyClient import (InvalidStatusCodeException,
+                                                  SpotifyClient)
 
 
 class UnableToGetLibrary(Exception):
@@ -75,7 +75,7 @@ class LibraryReaderFromAPI(LibraryReader):
                 albums=albums,
                 artists=artists
             )
-        except UnableToGetTracksException as ex:
+        except InvalidStatusCodeException as ex:
             raise UnableToGetLibrary(ex)
 
 

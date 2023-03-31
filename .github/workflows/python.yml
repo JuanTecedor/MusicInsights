@@ -22,10 +22,12 @@ jobs:
           pip install -r music_insights/requirements-dev.txt
       - name: Lint with flake8
         run: |
+          flake8 music_insights/main.py
           flake8 music_insights/music_insights
           flake8 music_insights/test
       - name: isort
         run: |
+          isort music_insights/main.py --check-only --diff
           isort music_insights/music_insights --check-only --diff
           isort music_insights/test --check-only --diff
       - name: Test with pytest

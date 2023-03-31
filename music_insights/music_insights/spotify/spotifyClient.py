@@ -1,6 +1,8 @@
+import logging
 from typing import Any, Optional, Self
 
 import requests
+
 from music_insights.library.album import Album
 from music_insights.library.artist import Artist
 from music_insights.library.library import Library
@@ -9,27 +11,7 @@ from music_insights.spotify.spotifyAuthenticator import SpotifyAuthenticator
 from music_insights.utils.utils import split_list_in_chunks
 
 
-class UnableToGetUserIDException(Exception):
-    pass
-
-
-class UnableToGetTracksException(Exception):
-    pass
-
-
-class UnableToGetArtistsException(Exception):
-    pass
-
-
-class UnableToGetAlbumsException(Exception):
-    pass
-
-
-class UnableToCreatePlaylistException(Exception):
-    pass
-
-
-class UnableToAddSongsToPlaylistException(Exception):
+class InvalidStatusCodeException(Exception):
     pass
 
 
@@ -38,6 +20,10 @@ class SpotifyClient:
     _SAVED_TRACKS_URL = _BASE_URL + "/me/tracks"
     _ARTISTS_URL = _BASE_URL + "/artists"
     _ALBUMS_URL = _BASE_URL + "/albums"
+    _PLAYLISTS_URL = _BASE_URL + "/playlists"
+
+    _GET_EXPECTED_STATUS_CODE = 200
+    _POST_EXPECTED_STATUS_CODE = 201
 
     def __init__(self, token: str) -> None:
         self._token = token
@@ -62,15 +48,20 @@ class SpotifyClient:
             ])
         )
 
+    @staticmethod
+    def _check_status_code(response: requests.Response, expected_status_code):
+        if response.status_code != expected_status_code:
+            raise InvalidStatusCodeException(
+                f"The status code was {response.status_code}, "
+                f"expected {expected_status_code}."
+            )
+
     def _get_user_id(self) -> None:
         response = requests.get(
             "https://api.spotify.com/v1/me",
             headers=self._get_common_headers()
         )
-        if response.status_code != 200:
-            raise UnableToGetUserIDException(
-                f"The response status code was not 200\n{response.text}"
-            )
+        self._check_status_code(response, self._GET_EXPECTED_STATUS_CODE)
         return response.json()["id"]
 
     def _get_common_headers(self) -> dict[str, str]:
@@ -88,10 +79,7 @@ class SpotifyClient:
                 "limit": 50
             }
         )
-        if response.status_code != 200:
-            raise UnableToGetTracksException(
-                f"The response status code was {response.status_code}"
-            )
+        self._check_status_code(response, self._GET_EXPECTED_STATUS_CODE)
         return response
 
     @staticmethod
@@ -121,6 +109,7 @@ class SpotifyClient:
         return songs
 
     def get_liked_songs(self) -> Library.SongsContainerType:
+        logging.info("Requesting liked songs")
         songs = {}
         next_url = None
         while True:
@@ -130,6 +119,7 @@ class SpotifyClient:
             next_url = json_response["next"]
             if next_url is None:
                 break
+        logging.info(f"Found {len(songs)} songs")
         return songs
 
     @staticmethod
@@ -149,6 +139,7 @@ class SpotifyClient:
 
     def get_artists(self, ids: list[Artist.IDType]) \
             -> Library.ArtistsContainerType:
+        logging.info("Requesting artists")
         artists = {}
         id_chunks = split_list_in_chunks(ids, 50)
         for id_chunk in id_chunks:
@@ -157,11 +148,9 @@ class SpotifyClient:
                 headers=self._get_common_headers(),
                 params={"ids": ",".join(id_chunk)}
             )
-            if response.status_code != 200:
-                raise UnableToGetArtistsException(
-                    f"The response status code was not 200\n{response.text}"
-                )
+            self._check_status_code(response, self._GET_EXPECTED_STATUS_CODE)
             artists = artists | self._parse_artists(response.json()["artists"])
+        logging.info(f"Found {len(artists)} artists")
         return artists
 
     @staticmethod
@@ -190,6 +179,7 @@ class SpotifyClient:
 
     def get_albums(self, ids: list[Album.IDType]) \
             -> Library.AlbumsContainerType:
+        logging.info("Requesting albums")
         albums = {}
         id_chunks = split_list_in_chunks(ids, 20)
         for id_chunk in id_chunks:
@@ -198,11 +188,9 @@ class SpotifyClient:
                 headers=self._get_common_headers(),
                 params={"ids": ",".join(id_chunk)}
             )
-            if response.status_code != 200:
-                raise UnableToGetAlbumsException(
-                    f"The response status code was not 200\n{response.text}"
-                )
+            self._check_status_code(response, self._GET_EXPECTED_STATUS_CODE)
             albums = albums | self._parse_albums(response.json()["albums"])
+        logging.info(f"Found {len(albums)} albums")
         return albums
 
     def create_playlist(
@@ -211,22 +199,20 @@ class SpotifyClient:
         data = {
             "name": playlist_name,
             "public": False,
-            "collaborative": False,
-            "description": ""
+            "collaborative": False
         }
-
         response = requests.post(
             self.CREATE_PLAYLIST_URL,
             headers=self._get_common_headers(),
             json=data
         )
-        if response.status_code != 201:
-            raise UnableToCreatePlaylistException(
-                f"The response status code was not 200\n{response.text}"
-            )
-
+        self._check_status_code(response, self._POST_EXPECTED_STATUS_CODE)
         playlist_id = response.json()["id"]
         self._add_songs_to_playlist(playlist_id, song_list)
+        logging.info(
+            f"Added playlist with name {playlist_name} "
+            f"containing {len(song_list)} songs"
+        )
 
     def _add_songs_to_playlist(
         self, playlist_id: str, song_list: list[Song.IDType]
@@ -238,11 +224,8 @@ class SpotifyClient:
                 "uris": [f"spotify:track:{x}" for x in splitted]
             }
             response = requests.post(
-                self._BASE_URL + f"/playlists/{playlist_id}/tracks",
+                self._PLAYLISTS_URL + f"/{playlist_id}/tracks",
                 headers=self._get_common_headers(),
-                json=data)
-
-            if response.status_code != 201:
-                raise UnableToAddSongsToPlaylistException(
-                    f"The response status code was not 200\n{response.text}"
-                )
+                json=data
+            )
+            self._check_status_code(response, self._POST_EXPECTED_STATUS_CODE)

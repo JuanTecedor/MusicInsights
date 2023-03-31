@@ -2,6 +2,7 @@ import re
 from enum import Enum
 
 import requests
+
 from music_insights.spotify.credentials import client_id
 
 
@@ -49,8 +50,9 @@ class SpotifyAuthenticator:
             )
         print(response.url)
         url_string_response = input(
-            "Please go to the following URL and paste the complete URL after "
-            "the authorization is done (when redirected to localhost):")
+            "Please go to the URL, accept the permissions and paste the "
+            "complete redirected URL after the authorization is done:\n"
+        )
         return SpotifyAuthenticator._extract_token_from_response(
             url_string_response
         )

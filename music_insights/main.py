@@ -11,8 +11,7 @@ if __name__ == "__main__":
     library.save_to_file()
 
     if arguments.create_playlists_by_decades:
-        if arguments.create_playlists_by_decades:
-            songs_by_decades = sorted(library.get_songs_by_decades().items())
-            client = SpotifyClient.read_write_playlist_client()
-            for decade, songs in songs_by_decades:
-                client.create_playlist(str(decade), songs)
+        songs_by_decades = sorted(library.get_songs_by_decades().items())
+        client = SpotifyClient.read_write_playlist_client()
+        for decade, songs in songs_by_decades:
+            client.create_playlist(str(decade), songs)
