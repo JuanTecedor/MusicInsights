@@ -16,12 +16,24 @@
 * Authorize the email from the Spotify user you want to read/write data to.
 
 ### Running the App
+#### If you are using Docker and VSCode:
+
+* Extension Dev Containers is strongly recommended.
+* ```$ docker-compose up --build -d music_insights```
+* Attach to Running Container...
+
+#### If you are using a venv:
 ```
-cd $PROJECT_ROOT/music_insights
-python3.11 -m venv ./.venv
-source .venv/bin/activate
-pip install -r requirements.txt
-python music_insights/main.py --create_playlists_by_decades
+$ cd $PROJECT_ROOT/music_insights
+$ python3.11 -m venv ./.venv
+$ source .venv/bin/activate
+$ pip install -r requirements.txt
+$ python music_insights/main.py --create_playlists_by_decades
+```
+
+If you want to debug and run the tests also do:
+```
+$ pip install -r requirements-dev.txt
 ```
 
 When downloading data and creating the playlists, the app will ask for authorization, follow the instructions in the terminal.

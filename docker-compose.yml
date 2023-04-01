@@ -9,7 +9,7 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ./music_insights:/music_insights
+      - .:/music_insights
     networks:
       - local_network
     restart: "no"
