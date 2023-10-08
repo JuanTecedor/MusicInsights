@@ -1,6 +1,5 @@
 import responses
 from unittest.mock import patch
-from pytest import fixture
 
 from music_insights.spotify.spotify_client import SpotifyClient
 from music_insights.spotify.spotify_authenticator import SpotifyAuthenticator
