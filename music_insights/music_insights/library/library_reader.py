@@ -7,8 +7,8 @@ from music_insights.library.album import Album
 from music_insights.library.artist import Artist
 from music_insights.library.library import Library, LibraryFilePaths
 from music_insights.library.song import Song
-from music_insights.spotify.spotifyClient import (InvalidStatusCodeException,
-                                                  SpotifyClient)
+from music_insights.spotify.spotify_client import (InvalidStatusCodeException,
+                                                   SpotifyClient)
 
 
 class UnableToGetLibrary(Exception):

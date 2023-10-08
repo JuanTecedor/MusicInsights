@@ -7,7 +7,7 @@ from music_insights.library.album import Album
 from music_insights.library.artist import Artist
 from music_insights.library.library import Library
 from music_insights.library.song import Song
-from music_insights.spotify.spotifyAuthenticator import SpotifyAuthenticator
+from music_insights.spotify.spotify_authenticator import SpotifyAuthenticator
 from music_insights.utils.utils import split_list_in_chunks
 
 
@@ -17,7 +17,8 @@ class InvalidStatusCodeException(Exception):
 
 class SpotifyClient:
     _BASE_URL = "https://api.spotify.com/v1"
-    _SAVED_TRACKS_URL = _BASE_URL + "/me/tracks"
+    _ME_ENDPOINT = _BASE_URL + "/me"
+    _SAVED_TRACKS_URL = _ME_ENDPOINT + "/tracks"
     _ARTISTS_URL = _BASE_URL + "/artists"
     _ALBUMS_URL = _BASE_URL + "/albums"
     _PLAYLISTS_URL = _BASE_URL + "/playlists"
@@ -58,7 +59,7 @@ class SpotifyClient:
 
     def _get_user_id(self) -> None:
         response = requests.get(
-            "https://api.spotify.com/v1/me",
+            self._ME_ENDPOINT,
             headers=self._get_common_headers()
         )
         self._check_status_code(response, self._GET_EXPECTED_STATUS_CODE)

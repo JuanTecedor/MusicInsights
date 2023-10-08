@@ -15,6 +15,8 @@ class AccessTokenNotFoundException(Exception):
 
 
 class SpotifyAuthenticator:
+    _AUTH_ENDPOINT = "https://accounts.spotify.com/authorize"
+
     class AvailableScopes(Enum):
         USER_LIBRARY_READ = "user-library-read"
         USER_TOP_READ = "user-top-read"
@@ -32,11 +34,18 @@ class SpotifyAuthenticator:
         return search.group(1)
 
     @staticmethod
+    def _get_url_from_input() -> str:
+        return input(
+            "Please go to the URL, accept the permissions and paste the "
+            "complete redirected URL after the authorization is done:\n"
+        )
+
+    @staticmethod
     def authenticate(scope: list[AvailableScopes]) -> str:
         # Implicit grant
         # https://developer.spotify.com/documentation/general/guides/authorization/implicit-grant/
         scope_str_list = [scope.value for scope in scope]
-        url = "https://accounts.spotify.com/authorize"
+        url = SpotifyAuthenticator._AUTH_ENDPOINT
         payload = {
             "client_id": client_id,
             "response_type": "token",
@@ -49,10 +58,6 @@ class SpotifyAuthenticator:
                 f"The status code was {response.status_code}"
             )
         print(response.url)
-        url_string_response = input(
-            "Please go to the URL, accept the permissions and paste the "
-            "complete redirected URL after the authorization is done:\n"
-        )
         return SpotifyAuthenticator._extract_token_from_response(
-            url_string_response
+            SpotifyAuthenticator._get_url_from_input()
         )
