@@ -1,8 +1,9 @@
-import responses
 from unittest.mock import patch
 
-from music_insights.spotify.spotify_client import SpotifyClient
+import responses
+
 from music_insights.spotify.spotify_authenticator import SpotifyAuthenticator
+from music_insights.spotify.spotify_client import SpotifyClient
 
 
 class TestSpotifyClient:

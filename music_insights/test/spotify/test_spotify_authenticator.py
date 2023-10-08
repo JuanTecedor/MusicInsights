@@ -1,13 +1,10 @@
-import responses
-
-import pytest
 from unittest.mock import patch
 
+import pytest
+import responses
+
 from music_insights.spotify.spotify_authenticator import (
-    AccessTokenNotFoundException,
-    BadStatusCodeException,
-    SpotifyAuthenticator
-)
+    AccessTokenNotFoundException, BadStatusCodeException, SpotifyAuthenticator)
 
 
 class TestAuthenticator:
