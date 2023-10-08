@@ -32,4 +32,4 @@ jobs:
           isort music_insights/test --check-only --diff
       - name: Test with pytest and coverage
         run: |
-          pytest --cov --cov-fail-under=80 music_insights/test
+          pytest --cov=music_insights/music_insights music_insights/test

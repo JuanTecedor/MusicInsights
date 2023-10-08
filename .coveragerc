@@ -1,0 +1,8 @@
+[run]
+source = music_insights/music_insights
+
+[report]
+fail_under = 80
+show_missing = True
+omit = music_insights/music_insights/spotify/credentials.py
+sort = Cover

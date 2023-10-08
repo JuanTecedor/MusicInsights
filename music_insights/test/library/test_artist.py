@@ -4,7 +4,7 @@ from music_insights.library.artist import Artist
 
 
 @fixture
-def example_album() -> Artist:
+def example_artist() -> Artist:
     return Artist(
         name="artist_name",
         artist_id="artistid",
@@ -15,6 +15,6 @@ def example_album() -> Artist:
 
 
 class TestAlbum:
-    def test_serialization(self, example_album: Artist):
-        deserialized = Artist.from_json_dict(example_album.to_json_dict())
-        assert example_album == deserialized
+    def test_serialization(self, example_artist: Artist):
+        deserialized = Artist.from_json_dict(example_artist.to_json_dict())
+        assert example_artist == deserialized
