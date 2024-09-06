@@ -1,0 +1,16 @@
+FROM python:3.11-slim AS base
+
+ENV PYTHONUNBUFFERED 1
+
+WORKDIR /music_insights
+
+COPY ./requirements.txt .
+COPY ./requirements-dev.txt .
+
+RUN pip install --no-cache-dir -r requirements-dev.txt
+
+FROM base AS test
+
+COPY . .
+
+CMD ["/bin/bash", "-c", "set -o xtrace; flake8 . && isort . --check-only --diff && pytest --cov=music_insights test && mypy"]

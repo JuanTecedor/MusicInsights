@@ -1,2 +1,2 @@
 [flake8]
-filename=main.py,music_insights,test
+exclude=.venv

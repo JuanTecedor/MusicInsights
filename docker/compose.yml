@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  test:
+    build:
+      dockerfile: docker/Dockerfile.test
+      context: ..
+    tty: true
+  main:
+    build:
+      dockerfile: docker/Dockerfile.run
+      context: ..
+    stdin_open: true
+    tty: true
