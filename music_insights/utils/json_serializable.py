@@ -17,7 +17,7 @@ class JSONSerializable(ABC):
         else:
             raise TypeError(f"The type {type(value)} is not serializable.")
 
-    def to_json_dict(self: Any) -> dict[JSON_Types, JSON_Types]:
+    def to_json_dict(self: Any) -> dict[str, JSON_Types]:
         return {
             variable_name: JSONSerializable._to_json(variable_value)
             for variable_name, variable_value

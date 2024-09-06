@@ -17,14 +17,13 @@ jobs:
           pip install -r requirements-dev.txt
       - name: Lint with flake8
         run: |
-          flake8 main.py
-          flake8 music_insights
-          flake8 test
+          flake8 .
       - name: isort
         run: |
-          isort main.py --check-only --diff
-          isort music_insights --check-only --diff
-          isort test --check-only --diff
+          isort . --check-only --diff
       - name: Test with pytest and coverage
         run: |
           pytest --cov=music_insights test
+      - name: mypy
+        run: |
+          mypy
