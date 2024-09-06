@@ -1,0 +1,5 @@
+-r requirements.txt
+-r requirements-lint.txt
+pytest
+pytest-cov
+responses
