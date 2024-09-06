@@ -21,14 +21,15 @@ def get_parser() -> ArgumentParser:
         required=False,
         help="Specifies if the program should save "
              "a json file in the output directory.",
-        default=True,
+        default=False,
         action="store_true"
     )
     parser.add_argument(
         "-c", "--create_playlists",
         required=False,
         help="Specifies if the program should create playlists by decades.",
-        default=False
+        default=False,
+        action="store_true"
     )
     return parser
 

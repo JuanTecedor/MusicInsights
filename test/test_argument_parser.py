@@ -13,6 +13,7 @@ from music_insights.argument_parser import get_parser_args
         (["-s"], False),
         (["--src", "api"], True),
         (["--src", "unknown"], False),
+        (["-c"], True)
     ]
 )
 def test_argparse(input_args: list[str], valid: bool) -> None:
@@ -31,5 +32,5 @@ def test_defaults() -> None:
     arguments = get_parser_args([])
     assert arguments.src == "file"
     assert arguments.dir == "out"
-    assert arguments.json
+    assert not arguments.json
     assert not arguments.create_playlists
