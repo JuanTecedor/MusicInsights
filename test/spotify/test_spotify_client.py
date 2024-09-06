@@ -1,3 +1,4 @@
+from typing import Final
 from unittest.mock import patch
 
 import responses
@@ -7,12 +8,13 @@ from music_insights.spotify.spotify_client import SpotifyClient
 
 
 class TestSpotifyClient:
+    BASE_PATCH_PATH: Final[str] = \
+        "music_insights.spotify.spotify_authenticator.SpotifyAuthenticator"
+
     @responses.activate()
-    @patch(
-        "music_insights.spotify.spotify_authenticator"
-        ".SpotifyAuthenticator._get_url_from_input"
-    )
-    def test_client(self, get_url_mock):
+    @patch(BASE_PATCH_PATH + "._get_url_from_input")
+    @patch(BASE_PATCH_PATH + "._SpotifyAuthenticator__check_client_id")
+    def test_client(self, _, get_url_mock):
         user_id = "id12345"
         get_url_mock.return_value = "access_token=abc"
         response_auth = responses.Response(
