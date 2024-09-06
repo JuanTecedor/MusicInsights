@@ -3,7 +3,8 @@ from enum import Enum
 
 import requests
 
-from music_insights.spotify.credentials import client_id
+from music_insights.spotify.credentials import (InvalidClientIdException,
+                                                client_id)
 
 
 class BadStatusCodeException(Exception):
@@ -29,7 +30,8 @@ class SpotifyAuthenticator:
         if search is None:
             raise AccessTokenNotFoundException(
                 "Unable to extract token from the URL. "
-                "Did you paste the complete URL?"
+                "Did you paste the complete URL? "
+                "Is the client ID valid?"
             )
         return search.group(1)
 
@@ -41,7 +43,13 @@ class SpotifyAuthenticator:
         )
 
     @staticmethod
+    def __check_client_id() -> None:
+        if client_id is None:
+            raise InvalidClientIdException("The client ID is invalid.")
+
+    @staticmethod
     def authenticate(scope: list[AvailableScopes]) -> str:
+        SpotifyAuthenticator.__check_client_id()
         # Implicit grant
         # https://developer.spotify.com/documentation/general/guides/authorization/implicit-grant/
         scope_str_list = [scope.value for scope in scope]

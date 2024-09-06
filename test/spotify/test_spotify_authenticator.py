@@ -1,3 +1,4 @@
+from typing import Final
 from unittest.mock import patch
 
 import pytest
@@ -8,12 +9,13 @@ from music_insights.spotify.spotify_authenticator import (
 
 
 class TestAuthenticator:
+    BASE_PATCH_PATH: Final[str] = \
+        "music_insights.spotify.spotify_authenticator.SpotifyAuthenticator"
+
     @responses.activate()
-    @patch(
-        "music_insights.spotify.spotify_authenticator"
-        ".SpotifyAuthenticator._get_url_from_input"
-    )
-    def test_authenticator(self, get_url_mock):
+    @patch(BASE_PATCH_PATH + "._get_url_from_input")
+    @patch(BASE_PATCH_PATH + "._SpotifyAuthenticator__check_client_id")
+    def test_authenticator(self, _, get_url_mock):
         access_token = "abnmghjk"
         url = "access_token=" + access_token
         get_url_mock.return_value = url
@@ -35,11 +37,9 @@ class TestAuthenticator:
         assert token == access_token
 
     @responses.activate()
-    @patch(
-        "music_insights.spotify.spotify_authenticator"
-        ".SpotifyAuthenticator._get_url_from_input"
-    )
-    def test_authenticator_invalid_url(self, get_url_mock):
+    @patch(BASE_PATCH_PATH + "._get_url_from_input")
+    @patch(BASE_PATCH_PATH + "._SpotifyAuthenticator__check_client_id")
+    def test_authenticator_invalid_url(self, _, get_url_mock):
         url = "invalid"
         get_url_mock.return_value = url
         response = responses.Response(
@@ -58,7 +58,8 @@ class TestAuthenticator:
             ])
 
     @responses.activate()
-    def test_authenticator_invalid_response_code(self):
+    @patch(BASE_PATCH_PATH + "._SpotifyAuthenticator__check_client_id")
+    def test_authenticator_invalid_response_code(self, _):
         response = responses.Response(
             method="GET",
             url=SpotifyAuthenticator._AUTH_ENDPOINT,

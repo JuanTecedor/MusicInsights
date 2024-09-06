@@ -1,7 +1,8 @@
 import logging
-from typing import Any, Optional, Self
+from typing import Any, Optional
 
 import requests
+from typing_extensions import Self
 
 from music_insights.library.album import Album
 from music_insights.library.artist import Artist
@@ -57,7 +58,7 @@ class SpotifyClient:
                 f"expected {expected_status_code}."
             )
 
-    def _get_user_id(self) -> None:
+    def _get_user_id(self) -> str:
         response = requests.get(
             self._ME_ENDPOINT,
             headers=self._get_common_headers()
@@ -111,7 +112,7 @@ class SpotifyClient:
 
     def get_liked_songs(self) -> Library.SongsContainerType:
         logging.info("Requesting liked songs")
-        songs = {}
+        songs: dict[Song.IDType, Song] = {}
         next_url = None
         while True:
             response = self._request_songs(next_url)
@@ -141,7 +142,7 @@ class SpotifyClient:
     def get_artists(self, ids: list[Artist.IDType]) \
             -> Library.ArtistsContainerType:
         logging.info("Requesting artists")
-        artists = {}
+        artists: dict[Artist.IDType, Artist] = {}
         id_chunks = split_list_in_chunks(ids, 50)
         for id_chunk in id_chunks:
             response = requests.get(
@@ -181,7 +182,7 @@ class SpotifyClient:
     def get_albums(self, ids: list[Album.IDType]) \
             -> Library.AlbumsContainerType:
         logging.info("Requesting albums")
-        albums = {}
+        albums: dict[Album.IDType, Album] = {}
         id_chunks = split_list_in_chunks(ids, 20)
         for id_chunk in id_chunks:
             response = requests.get(
