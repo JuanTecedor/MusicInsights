@@ -1,6 +1,7 @@
 from abc import ABC
 from datetime import date, datetime
-from typing import Any, TypeVar, TypeAlias, get_args
+from typing import Any, TypeAlias, TypeVar, get_args
+
 from typing_extensions import Self
 
 

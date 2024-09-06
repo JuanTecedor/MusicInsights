@@ -1,5 +1,4 @@
 from datetime import date, datetime
-from platform import release
 from typing import Any, Optional, TypeAlias
 
 from music_insights.library.artist import Artist
@@ -49,7 +48,7 @@ class Album(JSONSerializable):
     ) -> Optional[date]:
         # Some albums are missing the date
         if release_date is None \
-            or (date_format == "%Y" and release_date == "0000"):
+                or (date_format == "%Y" and release_date == "0000"):
             return None
 
         try:
