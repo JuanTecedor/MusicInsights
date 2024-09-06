@@ -1,13 +1,13 @@
 from datetime import datetime
-from typing import Any
+from typing import Any, TypeAlias
 
 from music_insights.library.artist import Artist
 from music_insights.utils.json_serializable import JSONSerializable
 
 
 class Song(JSONSerializable):
-    IDType = str
-    NameType = str
+    IDType: TypeAlias = str
+    NameType: TypeAlias = str
 
     def __init__(
         self,

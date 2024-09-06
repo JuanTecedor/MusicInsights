@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from typing import Any
+from typing import Any, Optional, TypeAlias
 
 from music_insights.library.artist import Artist
 from music_insights.library.song import Song
@@ -11,8 +11,8 @@ class UnknownDatePrecisionException(Exception):
 
 
 class Album(JSONSerializable):
-    IDType = str
-    NameType = str
+    IDType: TypeAlias = str
+    NameType: TypeAlias = str
 
     def __init__(
         self,
@@ -33,20 +33,30 @@ class Album(JSONSerializable):
         date_format = Album.date_precision_to_date_format(
             release_date_precision
         )
-        try:
-            self.release_date = datetime.strptime(
-                release_date,
-                date_format
-            ).date()
-        except ValueError:
-            # When loading back from file we always find the full string
-            self.release_date = date.fromisoformat(release_date)
+        self.release_date = self.__handle_release_date(
+            release_date, date_format
+        )
         self.release_date_precision = release_date_precision
         self.songs = songs
         self.total_tracks = total_tracks
         self.genres = genres
         self.label = label
         self.popularity = popularity
+
+    def __handle_release_date(
+        self, release_date, date_format
+    ) -> Optional[date]:
+        # Some albums are missing the date
+        if date_format == "%Y" and release_date == "0000":
+            return None
+        try:
+            return datetime.strptime(
+                release_date,
+                date_format
+            ).date()
+        except ValueError:
+            # When loading back from file we always find the full string
+            return date.fromisoformat(release_date)
 
     @staticmethod
     def date_precision_to_date_format(precision: str) -> str:

@@ -1,5 +1,6 @@
 import json
 import os
+from typing import TypeAlias
 
 from music_insights.library.album import Album
 from music_insights.library.artist import Artist
@@ -15,9 +16,9 @@ class LibraryFilePaths:
 
 
 class Library:
-    SongsContainerType = dict[Song.IDType, Song]
-    AlbumsContainerType = dict[Album.IDType, Album]
-    ArtistsContainerType = dict[Artist.IDType, Artist]
+    SongsContainerType: TypeAlias = dict[Song.IDType, Song]
+    AlbumsContainerType: TypeAlias = dict[Album.IDType, Album]
+    ArtistsContainerType: TypeAlias = dict[Artist.IDType, Artist]
 
     def __init__(
         self,
@@ -52,9 +53,13 @@ class Library:
         self._save_dict_to_file(self._albums, LibraryFilePaths.ALBUMS_PATH)
 
     def get_songs_by_decades(self) -> dict[int, list[Song.IDType]]:
-        songs_by_decades = {}
+        songs_by_decades: dict[int, list[Song.IDType]] = {}
         for song_id, song_data in self._songs.items():
-            year = self._albums[song_data.album_id].release_date.year
+            album = self._albums[song_data.album_id]
+            if album.release_date is None:
+                year = 0
+            else:
+                year = album.release_date.year
             decade = year - (year % 10)
             if decade in songs_by_decades:
                 songs_by_decades[decade].append(song_id)

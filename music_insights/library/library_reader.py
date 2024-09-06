@@ -1,7 +1,6 @@
 import json
 import logging
 from abc import ABC, abstractmethod
-from typing import Self
 
 from music_insights.library.album import Album
 from music_insights.library.artist import Artist
@@ -77,27 +76,3 @@ class LibraryReaderFromAPI(LibraryReader):
             )
         except InvalidStatusCodeException as ex:
             raise UnableToGetLibrary(ex)
-
-
-class LibraryReaderChain(LibraryReader):
-    def __init__(self, library_readers: list[LibraryReader]) -> None:
-        self._readers = library_readers
-
-    @classmethod
-    def default(cls) -> Self:
-        return cls([
-            LibraryReaderFromFile(),
-            LibraryReaderFromAPI()
-        ])
-
-    @classmethod
-    def only_api(cls) -> Self:
-        return cls([LibraryReaderFromAPI()])
-
-    def get_library(self) -> Library:
-        for reader in self._readers:
-            try:
-                return reader.get_library()
-            except UnableToGetLibrary:
-                continue
-        raise UnableToGetLibrary("Could not load library")

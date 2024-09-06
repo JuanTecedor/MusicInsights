@@ -1,35 +1,35 @@
+from argparse import ArgumentError
+
 import pytest
 
 from music_insights.argument_parser import get_parser_args
 
 
-def test_create_playlists_args():
-    arguments = get_parser_args(["--create_playlists_by_decades"])
-    assert not arguments.force_download
-    assert arguments.create_playlists_by_decades
+@pytest.mark.parametrize(
+    "input_args, valid",
+    [
+        ([], True),
+        (["unknown_arg"], False),
+        (["-s"], False),
+        (["--src", "api"], True),
+        (["--src", "unknown"], False),
+    ]
+)
+def test_argparse(input_args: list[str], valid: bool) -> None:
+    if valid:
+        arguments = get_parser_args(input_args)
+        assert getattr(arguments, "src") is not None
+        assert getattr(arguments, "dir") is not None
+        assert getattr(arguments, "create_playlists") is not None
+        assert getattr(arguments, "json") is not None
+    else:
+        with pytest.raises((SystemExit, ArgumentError)):
+            get_parser_args(input_args)
 
 
-def test_all_args():
-    arguments = get_parser_args([
-        "--force_download",
-        "--create_playlists_by_decades"
-    ])
-    assert arguments.force_download
-    assert arguments.create_playlists_by_decades
-
-
-def test_create_playlists_force_download_args():
-    arguments = get_parser_args(["--force_download"])
-    assert arguments.force_download
-    assert not arguments.create_playlists_by_decades
-
-
-def test_create_playlists_no_args():
+def test_defaults() -> None:
     arguments = get_parser_args([])
-    assert not arguments.force_download
-    assert not arguments.create_playlists_by_decades
-
-
-def test_unknown_arg():
-    with pytest.raises(SystemExit):
-        get_parser_args(["--unknown"])
+    assert arguments.src == "file"
+    assert arguments.dir == "out"
+    assert arguments.json
+    assert not arguments.create_playlists
